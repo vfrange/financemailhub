@@ -617,19 +617,21 @@
     word-break: break-all;
   }
 
-  /* ACTION BAR — barra preta operacional */
+  /* ACTION BAR — Opção D · Creme escuro com texto verde (combina com cmd-strip) */
   .action-bar {
     display: flex; gap: 0;
-    background: var(--cabana-black);
+    background: var(--cream-dark);
     padding: 0;
     margin: 18px 0 22px;
+    border-top: 2px solid var(--cabana-green);
+    border-bottom: 2px solid var(--cabana-green);
   }
   .action-bar .btn {
     background: transparent;
-    color: var(--cabana-cream);
+    color: var(--cabana-green);
     border: none;
-    border-right: 1px solid rgba(246,240,225,0.12);
-    padding: 11px 14px;
+    border-right: 1px solid var(--green-line);
+    padding: 13px 14px;
     font-family: var(--mono);
     font-size: 10px;
     font-weight: 700;
@@ -637,19 +639,25 @@
     text-transform: uppercase;
     cursor: pointer;
     flex: 1;
-    transition: background .12s;
+    transition: all .12s;
   }
   .action-bar .btn:last-child { border-right: none; }
-  .action-bar .btn:hover { background: rgba(255,80,40,0.2); }
-  .action-bar .btn.primary { background: var(--cabana-orange); color: var(--cabana-cream); }
-  .action-bar .btn.primary:hover { background: #C73D1F; }
+  .action-bar .btn:hover {
+    background: var(--cabana-green);
+    color: var(--cabana-cream);
+  }
+  .action-bar .btn.primary {
+    background: var(--cabana-green);
+    color: var(--cabana-cream);
+  }
+  .action-bar .btn.primary:hover { background: var(--cabana-orange); }
 
   .cat-select {
     background: transparent;
-    color: var(--cabana-cream);
+    color: var(--cabana-green);
     border: none;
-    border-right: 1px solid rgba(246,240,225,0.12);
-    padding: 11px 14px;
+    border-right: 1px solid var(--green-line);
+    padding: 13px 14px;
     font-family: var(--mono);
     font-size: 10px;
     font-weight: 700;
@@ -657,7 +665,7 @@
     text-transform: uppercase;
     cursor: pointer;
   }
-  .cat-select option { background: var(--cabana-black); color: var(--cabana-cream); }
+  .cat-select option { background: var(--cabana-cream); color: var(--cabana-green); }
 
   .btn {
     padding: 7px 12px;
@@ -1121,7 +1129,6 @@
     <span class="filter-divider"></span>
     <span class="filter-label">Status</span>
     <button class="chip active" data-status="todos">Todos</button>
-    <button class="chip" data-status="nao-classificado">Não classif.</button>
     <button class="chip" data-status="duplicados">Duplicados <span class="chip-count" id="cnt-dup">0</span></button>
   </div>
 
@@ -1575,10 +1582,7 @@
       if (state.filterCaixa !== 'todas') {
         if (g.caixas.indexOf(state.filterCaixa) === -1) return false;
       }
-      var clf = state.classificacoes[g.key];
-      if (state.filterStatus === 'nao-classificado') {
-        if (clf && clf.categoria) return false;
-      } else if (state.filterStatus === 'duplicados') {
+      if (state.filterStatus === 'duplicados') {
         if (!g.isDup) return false;
       }
       return true;
@@ -1598,7 +1602,6 @@
     grupos.forEach(function(g) {
       var e = g.principal;
       var clf = state.classificacoes[g.key] || {};
-      var cat = CATEGORIAS.find(function(c){ return c.id === clf.categoria; });
       var unread = e.unread !== false && !e.is_read && clf.status !== 'lido';
 
       var row = document.createElement('div');
@@ -1611,7 +1614,6 @@
       }).join('');
 
       var dupHtml = g.isDup ? '<span class="badge dup">⧉ ' + (g.duplicados.length + 1) + 'x</span>' : '';
-      var catHtml = cat ? '<span class="badge cat ' + cat.cls + '">' + cat.label + '</span>' : '';
 
       var attCount = (e.attachments || []).length;
       var attHtml = attCount > 0 ? '<span class="badge att">📎 ' + attCount + '</span>' : '';
@@ -1625,7 +1627,7 @@
         '</div>' +
         '<div class="email-subject">' + escapeHtml(e.subject || '(sem assunto)') + '</div>' +
         '<div class="email-preview">' + escapeHtml(preview) + '</div>' +
-        '<div class="email-meta">' + caixasHtml + dupHtml + attHtml + catHtml + '</div>';
+        '<div class="email-meta">' + caixasHtml + dupHtml + attHtml + '</div>';
 
       col.appendChild(row);
     });
@@ -1738,12 +1740,10 @@
         '</div>' +
 
         '<div class="action-bar">' +
-          '<select class="cat-select" id="catSelect">' + catOptions + '</select>' +
           '<button class="btn primary" id="btnReply">↩ RESPONDER</button>' +
           '<button class="btn" id="btnReplyAll">↩↩ TODOS</button>' +
           '<button class="btn" id="btnForward">↪ ENCAMINHAR</button>' +
           '<button class="btn" id="markRead">' + (clf.status === 'lido' ? '↺ NÃO LIDO' : '✓ LIDO') + '</button>' +
-          '<button class="btn" id="markResponded">' + (clf.status === 'respondido' ? '↺ NÃO RESP.' : '✓ RESP.') + '</button>' +
           '<button class="btn" id="markArchived">' + (clf.status === 'arquivado' ? '↺ DESARQ.' : '⌫ ARQUIVAR') + '</button>' +
         '</div>' +
 
@@ -1769,13 +1769,6 @@
       }, 50);
     }
 
-    $('catSelect').onchange = function(ev) {
-      state.classificacoes[grupo.key] = state.classificacoes[grupo.key] || {};
-      state.classificacoes[grupo.key].categoria = ev.target.value;
-      saveState();
-      renderList();
-    };
-
     $('markRead').onclick = function() {
       var becomingRead = clf.status !== 'lido';
       var btn = $('markRead');
@@ -1800,14 +1793,6 @@
           btn.disabled = false;
           btn.textContent = clf.status === 'lido' ? '↺ Marcar não lido' : '✓ Marcar lido';
         });
-    };
-
-    $('markResponded').onclick = function() {
-      state.classificacoes[grupo.key] = state.classificacoes[grupo.key] || {};
-      state.classificacoes[grupo.key].status = clf.status === 'respondido' ? null : 'respondido';
-      saveState();
-      renderDetail();
-      renderList();
     };
 
     $('markArchived').onclick = function() {
