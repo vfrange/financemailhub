@@ -1145,7 +1145,7 @@
     <div class="modal-sub">Webhooks do Power Automate</div>
 
     <div class="modal-field">
-      <label>1) Webhook de busca (GET)</label>
+      <label>1) Webhook de busca (POST)</label>
       <input type="text" id="cfgFetch" placeholder="https://prod-xx.eastus.logic.azure.com/...">
       <div class="modal-field-help">Retorna array com emails das 5 caixas individuais. Cada item deve ter <code>caixa_origem</code>: "fiscal", "recebimento", "contas", "receber" ou "financeiro".</div>
     </div>
@@ -1412,7 +1412,11 @@
     btn.classList.add('spin');
     btn.disabled = true;
 
-    fetch(state.config.fetchUrl, { method: 'GET' })
+    fetch(state.config.fetchUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'fetch' })
+    })
       .then(function(r) { return r.json(); })
       .then(function(data) {
         var emails = Array.isArray(data) ? data : (data.value || data.emails || data.results || []);
