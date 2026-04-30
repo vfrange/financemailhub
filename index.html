@@ -1,0 +1,2514 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cabana · Finance Mail Hub</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&family=DM+Serif+Display&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    /* Cabana brand */
+    --cabana-green: #0A6B2C;
+    --cabana-cream: #F6F0E1;
+    --cabana-orange: #FF5028;
+    --cabana-green-digital: #A8E067;
+    --cabana-black: #0A0A0A;
+
+    /* Derived */
+    --cream-dark: #E8DFC8;       /* Faixa A */
+    --green-soft: rgba(10,107,44,0.08);
+    --green-line: rgba(10,107,44,0.18);
+    --green-line-soft: rgba(10,107,44,0.10);
+    --orange-soft: rgba(255,80,40,0.10);
+
+    /* Aliases pra reutilizar nomes da v4 */
+    --bg: #F6F0E1;
+    --bg-elev: #F6F0E1;
+    --bg-soft: #E8DFC8;
+    --ink: #0A0A0A;
+    --ink-soft: #0A6B2C;
+    --ink-faint: rgba(10,107,44,0.55);
+    --line: rgba(10,107,44,0.22);
+    --line-soft: rgba(10,107,44,0.12);
+    --accent: #FF5028;
+    --accent-soft: rgba(255,80,40,0.12);
+    --accent-deep: #C73D1F;
+    --green: #0A6B2C;
+    --amber: #C28E1F;
+    --amber-soft: rgba(194,142,31,0.15);
+    --red: #B03A3A;
+    --red-soft: rgba(176,58,58,0.12);
+    --blue: #2D5878;
+    --blue-soft: rgba(45,88,120,0.12);
+    --purple: #5A3F6E;
+    --purple-soft: rgba(90,63,110,0.12);
+    --teal: #1F6B6B;
+    --teal-soft: rgba(31,107,107,0.12);
+
+    --shadow-sm: 0 1px 2px rgba(10,10,10,.04);
+    --shadow-md: 0 2px 6px rgba(10,10,10,.08);
+    --shadow-lg: 0 8px 24px rgba(10,10,10,.12);
+
+    --radius: 0;
+    --radius-lg: 0;
+
+    --mono: 'JetBrains Mono', 'SF Mono', Monaco, monospace;
+    --serif: 'DM Serif Display', Georgia, serif;
+    --sans: 'Inter', -apple-system, sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+
+  body {
+    background: var(--cabana-cream);
+    color: var(--cabana-black);
+    font-family: var(--sans);
+    font-size: 13px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    overflow: hidden;
+  }
+
+  /* ============ LOGIN ============ */
+  .login-screen {
+    position: fixed; inset: 0;
+    background: var(--cabana-cream);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 1000;
+  }
+  .login-card {
+    background: var(--cabana-cream);
+    padding: 56px 48px;
+    border: 2px solid var(--cabana-green);
+    box-shadow: 8px 8px 0 var(--cabana-green);
+    width: 380px;
+    text-align: center;
+  }
+  .login-mark {
+    font-family: var(--mono);
+    font-weight: 700;
+    font-size: 11px;
+    letter-spacing: 3px;
+    color: var(--cabana-orange);
+    text-transform: uppercase;
+    margin-bottom: 24px;
+  }
+  .login-title {
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: 48px;
+    line-height: 0.95;
+    letter-spacing: -2px;
+    color: var(--cabana-black);
+    margin-bottom: 6px;
+  }
+  .login-title em {
+    font-style: normal;
+    color: var(--cabana-green);
+  }
+  .login-sub {
+    color: var(--cabana-green);
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-weight: 700;
+    margin-bottom: 36px;
+    opacity: 0.7;
+  }
+  .login-input {
+    width: 100%; padding: 12px 14px;
+    border: 1.5px solid var(--cabana-green);
+    background: var(--cabana-cream);
+    font-family: var(--mono);
+    font-size: 13px;
+    margin-bottom: 10px;
+    color: var(--cabana-black);
+  }
+  .login-input:focus { outline: 2px solid var(--cabana-orange); outline-offset: -2px; }
+  .login-btn {
+    width: 100%; padding: 14px;
+    background: var(--cabana-green);
+    color: var(--cabana-cream);
+    border: none;
+    font-family: var(--sans);
+    font-size: 11px;
+    font-weight: 900;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    cursor: pointer;
+    margin-top: 10px;
+  }
+  .login-btn:hover { background: var(--cabana-orange); }
+  .login-error { color: var(--cabana-orange); font-size: 11px; font-weight: 700; margin-top: 12px; min-height: 16px; letter-spacing: 0.5px; }
+
+  /* ============ APP ============ */
+  .app { display: none; height: 100vh; flex-direction: column; }
+  .app.visible { display: flex; }
+
+  /* TOPBAR — verde Cabana */
+  .topbar {
+    background: var(--cabana-green);
+    color: var(--cabana-cream);
+    padding: 12px 24px;
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 24px; flex-shrink: 0;
+  }
+  .brand { display: flex; align-items: center; gap: 12px; }
+  .brand-logo {
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: 22px;
+    color: var(--cabana-cream);
+    letter-spacing: -0.5px;
+    line-height: 1;
+  }
+  .brand-logo em { font-style: normal; color: var(--cabana-green-digital); }
+  .brand-logo sup { font-size: 0.45em; color: var(--cabana-green-digital); }
+  .brand-tag {
+    background: var(--cabana-green-digital);
+    color: var(--cabana-green);
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-weight: 700;
+    padding: 3px 10px;
+  }
+
+  .top-actions { display: flex; align-items: center; gap: 8px; }
+  .top-stats {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--cabana-cream);
+    letter-spacing: 1px;
+    opacity: 0.85;
+    font-weight: 500;
+    margin-right: 8px;
+    text-transform: uppercase;
+  }
+  .top-stats strong { color: var(--cabana-green-digital); font-weight: 700; }
+  .icon-btn {
+    background: transparent;
+    border: 1px solid rgba(246,240,225,0.3);
+    color: var(--cabana-cream);
+    width: 30px; height: 30px;
+    cursor: pointer;
+    display: inline-flex; align-items: center; justify-content: center;
+    transition: all .15s;
+  }
+  .icon-btn:hover { background: var(--cabana-orange); border-color: var(--cabana-orange); color: var(--cabana-cream); }
+  .icon-btn svg { width: 14px; height: 14px; }
+  .icon-btn.spin svg { animation: spin 1s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* CMD STRIP — Opção A: creme escuro com texto verde */
+  .cmd-strip {
+    background: var(--cream-dark);
+    color: var(--cabana-green);
+    padding: 14px 24px;
+    display: flex; align-items: center; gap: 24px;
+    font-size: 11px; letter-spacing: 1px; text-transform: uppercase; font-weight: 700;
+    font-family: var(--mono);
+    border-bottom: 1px solid var(--green-line);
+    flex-shrink: 0;
+    flex-wrap: wrap;
+  }
+  .cmd-strip .cmd-stat { display: inline-flex; align-items: baseline; gap: 6px; }
+  .cmd-strip .cmd-label { opacity: 0.55; font-weight: 500; }
+  .cmd-strip .cmd-val { font-size: 16px; font-weight: 700; color: var(--cabana-green); }
+  .cmd-strip .cmd-spacer { flex: 1; }
+  .cmd-strip .cmd-sync .cmd-val { color: var(--cabana-green); }
+  .cmd-strip .cmd-sync .cmd-val.warn { color: var(--cabana-orange); }
+
+  /* FILTER STRIP */
+  .filter-strip {
+    background: var(--cabana-cream);
+    padding: 14px 24px;
+    border-bottom: 1px solid var(--green-line);
+    display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+    flex-shrink: 0;
+  }
+  .filter-label {
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--cabana-green);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-weight: 700;
+    opacity: 0.6;
+    margin-right: 4px;
+  }
+  .chip {
+    background: transparent;
+    border: 1px solid var(--cabana-green);
+    padding: 5px 10px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--cabana-green);
+    cursor: pointer;
+    display: inline-flex; align-items: center; gap: 6px;
+    font-family: var(--mono);
+    white-space: nowrap;
+    transition: all .12s;
+  }
+  .chip:hover { background: var(--green-soft); }
+  .chip.active { background: var(--cabana-green); color: var(--cabana-cream); border-color: var(--cabana-green); }
+  .chip-count { font-size: 10px; font-weight: 700; opacity: 0.65; }
+  .chip.active .chip-count { color: var(--cabana-green-digital); opacity: 1; }
+  .chip-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--cabana-green); flex-shrink: 0; }
+  .chip.cx-fiscal .chip-dot { background: var(--cabana-green); }
+  .chip.cx-recebimento .chip-dot { background: var(--cabana-green-digital); }
+  .chip.cx-contas .chip-dot { background: var(--cabana-orange); }
+  .chip.cx-financeiro .chip-dot { background: var(--cabana-black); }
+
+  .filter-divider { width: 1px; height: 18px; background: var(--green-line); margin: 0 4px; }
+
+  /* MAIN */
+  .main {
+    display: grid;
+    grid-template-columns: 380px 1fr;
+    flex: 1; overflow: hidden; min-height: 0;
+  }
+
+  /* LIST COL */
+  .list-col {
+    background: var(--cabana-cream);
+    border-right: 2px solid var(--cabana-green);
+    overflow-y: auto;
+    display: flex; flex-direction: column;
+  }
+  .list-col::-webkit-scrollbar { width: 8px; }
+  .list-col::-webkit-scrollbar-track { background: transparent; }
+  .list-col::-webkit-scrollbar-thumb { background: var(--cabana-green); }
+
+  .list-empty {
+    padding: 60px 24px; text-align: center;
+    color: var(--cabana-green);
+    opacity: 0.55;
+    font-style: italic;
+    font-family: var(--serif);
+  }
+
+  .email-row {
+    padding: 12px 18px;
+    border-bottom: 1px solid var(--green-line-soft);
+    cursor: pointer;
+    position: relative;
+    transition: background .12s;
+  }
+  .email-row:hover { background: var(--green-soft); }
+  .email-row.selected {
+    background: var(--cabana-cream);
+    border-left: 4px solid var(--cabana-orange);
+    padding-left: 14px;
+  }
+  .email-row.unread::before {
+    content: '';
+    position: absolute;
+    left: 6px; top: 18px;
+    width: 6px; height: 6px;
+    background: var(--cabana-orange);
+    border-radius: 50%;
+  }
+  .email-row.selected.unread::before { left: 12px; }
+  .email-row.unread .email-from { font-weight: 900; }
+  .email-row.unread .email-subject { font-weight: 900; color: var(--cabana-black); }
+
+  .email-row-top {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 3px; gap: 8px;
+  }
+  .email-from {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--cabana-green);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex: 1;
+  }
+  .email-time {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--cabana-green);
+    opacity: 0.55;
+    flex-shrink: 0;
+    font-weight: 500;
+  }
+  .email-subject {
+    font-size: 13px;
+    color: var(--cabana-black);
+    margin-bottom: 3px;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .email-preview {
+    font-size: 11px;
+    color: var(--cabana-black);
+    opacity: 0.55;
+    line-height: 1.35;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+  }
+  .email-meta {
+    display: flex; align-items: center; gap: 4px;
+    margin-top: 6px; flex-wrap: wrap;
+  }
+
+  /* BADGES */
+  .badge {
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    padding: 2px 6px;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+  .badge.cx-fiscal { background: var(--cabana-green); color: var(--cabana-cream); }
+  .badge.cx-recebimento { background: var(--cabana-green-digital); color: var(--cabana-green); }
+  .badge.cx-contas { background: var(--cabana-orange); color: var(--cabana-cream); }
+  .badge.cx-financeiro { background: var(--cabana-black); color: var(--cabana-cream); }
+  .badge.dup { background: var(--cabana-orange); color: var(--cabana-cream); display: inline-flex; align-items: center; gap: 3px; }
+  .badge.att { background: var(--green-soft); color: var(--cabana-green); border: 1px solid var(--green-line); display: inline-flex; align-items: center; gap: 3px; }
+  .badge.cat { background: var(--green-soft); color: var(--cabana-green); }
+  .badge.cat.crit { background: var(--red-soft); color: var(--red); }
+  .badge.cat.diret { background: var(--purple-soft); color: var(--purple); }
+  .badge.cat.andam { background: var(--blue-soft); color: var(--blue); }
+  .badge.cat.resp { background: var(--amber-soft); color: var(--amber); }
+  .badge.cat.forn { background: var(--green-soft); color: var(--cabana-green); }
+  .badge.cat.cien { background: var(--green-soft); color: var(--cabana-green); opacity: 0.7; }
+
+  /* DETAIL COL */
+  .detail-col { overflow-y: auto; background: var(--cabana-cream); }
+  .detail-col::-webkit-scrollbar { width: 8px; }
+  .detail-col::-webkit-scrollbar-track { background: transparent; }
+  .detail-col::-webkit-scrollbar-thumb { background: var(--cabana-green); }
+
+  .detail-empty {
+    height: 100%;
+    display: flex; align-items: center; justify-content: center;
+    flex-direction: column; gap: 12px;
+    color: var(--cabana-green);
+    opacity: 0.5;
+    font-family: var(--serif);
+    font-style: italic;
+  }
+  .detail-empty svg { width: 48px; height: 48px; }
+
+  .detail { padding: 28px 36px; max-width: 900px; }
+  .detail-header { border-bottom: 1px solid var(--green-line); padding-bottom: 20px; margin-bottom: 20px; }
+  .detail-eyebrow {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--cabana-orange);
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+  .detail-subject {
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: 30px;
+    line-height: 1.15;
+    letter-spacing: -1px;
+    color: var(--cabana-black);
+    margin-bottom: 14px;
+  }
+  .detail-meta-row {
+    display: flex; align-items: center; gap: 10px;
+    flex-wrap: wrap; margin-bottom: 6px;
+    font-size: 12px; color: var(--cabana-green);
+  }
+  .detail-meta-row strong { color: var(--cabana-black); font-weight: 700; }
+  .detail-meta-row .sep { opacity: 0.4; }
+
+  .duplicate-banner {
+    background: var(--orange-soft);
+    color: var(--cabana-orange);
+    padding: 10px 14px;
+    border-left: 3px solid var(--cabana-orange);
+    margin: 14px 0;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.3px;
+  }
+  .duplicate-banner strong { font-weight: 900; text-transform: uppercase; }
+  .duplicate-list {
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px dashed rgba(255,80,40,0.3);
+    font-family: var(--mono);
+    font-size: 10px;
+  }
+  .duplicate-list-item { padding: 2px 0; }
+
+  .detail-body {
+    font-size: 13px;
+    line-height: 1.65;
+    color: var(--cabana-black);
+    margin-bottom: 24px;
+    white-space: normal;
+    word-wrap: break-word;
+  }
+  .detail-body iframe {
+    border: 1px solid var(--green-line);
+    width: 100%;
+    min-height: 400px;
+    background: var(--cabana-cream);
+  }
+
+  /* ATTACHMENTS */
+  .attachments-section {
+    margin-bottom: 20px;
+  }
+  .attachments-header {
+    font-family: var(--mono);
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--cabana-green);
+    opacity: 0.7;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+  .attachments-list {
+    display: flex; flex-direction: column;
+    gap: 4px;
+  }
+  .attachment-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 12px;
+    border: 1px solid var(--green-line);
+    background: var(--cabana-cream);
+    cursor: pointer;
+    transition: all .1s;
+  }
+  .attachment-item:hover { background: var(--green-soft); border-color: var(--cabana-green); }
+  .attachment-icon {
+    width: 28px; height: 28px;
+    background: var(--cabana-cream);
+    border: 1px solid var(--green-line);
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--mono);
+    font-size: 9px;
+    font-weight: 700;
+    color: var(--cabana-green);
+    flex-shrink: 0;
+    text-transform: uppercase;
+  }
+  .attachment-icon.pdf { background: var(--orange-soft); color: var(--cabana-orange); border-color: var(--cabana-orange); }
+  .attachment-icon.xml { background: var(--green-soft); color: var(--cabana-green); border-color: var(--cabana-green); }
+  .attachment-icon.img { background: rgba(168,224,103,0.2); color: var(--cabana-green); border-color: var(--cabana-green-digital); }
+  .attachment-icon.doc { background: var(--green-soft); color: var(--cabana-green); }
+  .attachment-icon.xls { background: var(--green-soft); color: var(--cabana-green); }
+
+  .attachment-info { flex: 1; min-width: 0; }
+  .attachment-name {
+    font-size: 12px;
+    color: var(--cabana-black);
+    font-weight: 700;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .attachment-meta {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--cabana-green);
+    opacity: 0.6;
+    margin-top: 2px;
+    font-weight: 500;
+  }
+  .attachment-actions { display: flex; gap: 4px; flex-shrink: 0; }
+  .attachment-btn {
+    width: 26px; height: 26px;
+    border: 1px solid var(--green-line);
+    background: var(--cabana-cream);
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--cabana-green);
+    transition: all .1s;
+  }
+  .attachment-btn:hover { color: var(--cabana-orange); border-color: var(--cabana-orange); }
+  .attachment-btn svg { width: 12px; height: 12px; }
+  .attachment-btn.loading svg { animation: spin 1s linear infinite; }
+
+  /* PREVIEW MODAL */
+  .preview-overlay {
+    position: fixed; inset: 0;
+    background: rgba(10,10,10,0.75);
+    z-index: 1100;
+    display: none;
+  }
+  .preview-overlay.visible { display: flex; align-items: center; justify-content: center; }
+  .preview-modal {
+    background: var(--cabana-cream);
+    border: 2px solid var(--cabana-green);
+    width: 92vw; height: 92vh;
+    display: flex; flex-direction: column;
+    overflow: hidden;
+  }
+  .preview-header {
+    padding: 12px 18px;
+    background: var(--cabana-green);
+    color: var(--cabana-cream);
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 12px; flex-shrink: 0;
+  }
+  .preview-title {
+    font-family: var(--mono);
+    font-weight: 700;
+    font-size: 12px;
+    letter-spacing: 1px;
+    color: var(--cabana-cream);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .preview-actions { display: flex; gap: 6px; flex-shrink: 0; }
+  .preview-body {
+    flex: 1; overflow: auto;
+    background: var(--cream-dark);
+    display: flex; align-items: center; justify-content: center;
+    padding: 16px;
+  }
+  .preview-body iframe, .preview-body embed {
+    width: 100%; height: 100%; border: none;
+    background: var(--cabana-cream);
+  }
+  .preview-body img {
+    max-width: 100%; max-height: 100%;
+    object-fit: contain;
+  }
+  .preview-body .no-preview {
+    text-align: center;
+    color: var(--cabana-green);
+    font-family: var(--serif);
+    font-style: italic;
+  }
+  .preview-body pre {
+    background: var(--cabana-cream);
+    border: 1px solid var(--green-line);
+    padding: 18px;
+    font-family: var(--mono);
+    font-size: 11px;
+    line-height: 1.5;
+    color: var(--cabana-black);
+    overflow: auto;
+    width: 100%; height: 100%;
+    white-space: pre-wrap;
+    word-break: break-all;
+  }
+
+  /* ACTION BAR — barra preta operacional */
+  .action-bar {
+    display: flex; gap: 0;
+    background: var(--cabana-black);
+    padding: 0;
+    margin: 18px 0 22px;
+  }
+  .action-bar .btn {
+    background: transparent;
+    color: var(--cabana-cream);
+    border: none;
+    border-right: 1px solid rgba(246,240,225,0.12);
+    padding: 11px 14px;
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    cursor: pointer;
+    flex: 1;
+    transition: background .12s;
+  }
+  .action-bar .btn:last-child { border-right: none; }
+  .action-bar .btn:hover { background: rgba(255,80,40,0.2); }
+  .action-bar .btn.primary { background: var(--cabana-orange); color: var(--cabana-cream); }
+  .action-bar .btn.primary:hover { background: #C73D1F; }
+
+  .cat-select {
+    background: transparent;
+    color: var(--cabana-cream);
+    border: none;
+    border-right: 1px solid rgba(246,240,225,0.12);
+    padding: 11px 14px;
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+  .cat-select option { background: var(--cabana-black); color: var(--cabana-cream); }
+
+  .btn {
+    padding: 7px 12px;
+    border: 1px solid var(--cabana-green);
+    background: var(--cabana-cream);
+    color: var(--cabana-green);
+    cursor: pointer;
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    transition: all .12s;
+    display: inline-flex; align-items: center; gap: 6px;
+  }
+  .btn:hover { background: var(--cabana-green); color: var(--cabana-cream); }
+  .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .btn.primary { background: var(--cabana-orange); color: var(--cabana-cream); border-color: var(--cabana-orange); }
+  .btn.primary:hover { background: var(--accent-deep); border-color: var(--accent-deep); }
+  .btn svg { width: 12px; height: 12px; }
+
+  /* MODALS */
+  .modal-overlay {
+    position: fixed; inset: 0;
+    background: rgba(10,10,10,0.5);
+    z-index: 999;
+    display: none;
+    align-items: center; justify-content: center;
+  }
+  .modal-overlay.visible { display: flex; }
+  .modal {
+    background: var(--cabana-cream);
+    border: 2px solid var(--cabana-green);
+    box-shadow: 8px 8px 0 var(--cabana-green);
+    padding: 28px;
+    width: 540px; max-width: 90vw;
+    max-height: 85vh; overflow-y: auto;
+  }
+  .modal-title {
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: 28px;
+    color: var(--cabana-black);
+    letter-spacing: -0.5px;
+    margin-bottom: 4px;
+  }
+  .modal-sub {
+    color: var(--cabana-green);
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 22px;
+    opacity: 0.7;
+    font-weight: 500;
+  }
+  .modal-field { margin-bottom: 14px; }
+  .modal-field label {
+    display: block;
+    font-family: var(--mono);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--cabana-green);
+    margin-bottom: 5px;
+    font-weight: 700;
+  }
+  .modal-field input {
+    width: 100%; padding: 9px 11px;
+    border: 1px solid var(--cabana-green);
+    background: var(--cabana-cream);
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--cabana-black);
+  }
+  .modal-field input:focus { outline: 2px solid var(--cabana-orange); outline-offset: -2px; }
+  .modal-field-help {
+    font-size: 11px;
+    color: var(--cabana-green);
+    opacity: 0.7;
+    margin-top: 4px;
+  }
+  .modal-field-help code {
+    font-family: var(--mono);
+    font-size: 10px;
+    background: var(--green-soft);
+    padding: 1px 4px;
+    color: var(--cabana-green);
+  }
+  .modal-actions {
+    display: flex; justify-content: flex-end; gap: 8px;
+    margin-top: 22px; padding-top: 14px;
+    border-top: 1px solid var(--green-line);
+  }
+
+  /* COMPOSER */
+  .composer-section {
+    background: var(--cabana-cream);
+    border: 2px solid var(--cabana-orange);
+    margin-bottom: 22px;
+    overflow: hidden;
+  }
+  .composer-header {
+    padding: 12px 16px;
+    background: var(--cabana-orange);
+    color: var(--cabana-cream);
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 12px;
+  }
+  .composer-mode-label {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+  }
+  .composer-close {
+    background: transparent;
+    border: 1px solid rgba(246,240,225,0.4);
+    color: var(--cabana-cream);
+    cursor: pointer;
+    width: 24px; height: 24px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .composer-close:hover { background: rgba(246,240,225,0.15); }
+  .composer-close svg { width: 14px; height: 14px; }
+
+  .composer-fields {
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--green-line);
+  }
+  .composer-field-row {
+    display: flex; align-items: center; gap: 10px;
+    padding: 5px 0;
+    border-bottom: 1px solid var(--green-line-soft);
+  }
+  .composer-field-row:last-child { border-bottom: none; }
+  .composer-field-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--cabana-green);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    font-weight: 700;
+    width: 50px;
+    flex-shrink: 0;
+    opacity: 0.7;
+  }
+  .composer-field-input {
+    flex: 1;
+    border: none;
+    background: transparent;
+    font-family: var(--sans);
+    font-size: 13px;
+    color: var(--cabana-black);
+    padding: 3px 0;
+    outline: none;
+  }
+  .composer-field-input::placeholder { color: var(--cabana-green); opacity: 0.45; }
+
+  .composer-toolbar {
+    display: flex; align-items: center; gap: 2px;
+    padding: 6px 10px;
+    border-bottom: 1px solid var(--green-line);
+    background: var(--cream-dark);
+    flex-wrap: wrap;
+  }
+  .toolbar-btn {
+    width: 26px; height: 26px;
+    border: none;
+    background: transparent;
+    color: var(--cabana-green);
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--serif);
+    font-size: 13px;
+    font-weight: 700;
+    transition: all .1s;
+  }
+  .toolbar-btn:hover { background: var(--cabana-green); color: var(--cabana-cream); }
+  .toolbar-btn.active { background: var(--cabana-orange); color: var(--cabana-cream); }
+  .toolbar-btn svg { width: 13px; height: 13px; }
+  .toolbar-divider { width: 1px; height: 16px; background: var(--green-line); margin: 0 4px; }
+  .toolbar-color {
+    width: 18px; height: 18px;
+    cursor: pointer;
+    border: 1px solid var(--cabana-cream);
+    box-shadow: 0 0 0 1px var(--cabana-green);
+    margin: 0 2px;
+    transition: transform .1s;
+  }
+  .toolbar-color:hover { transform: scale(1.15); }
+
+  .composer-editor {
+    min-height: 200px;
+    max-height: 480px;
+    overflow-y: auto;
+    padding: 14px 16px;
+    font-family: var(--sans);
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--cabana-black);
+    outline: none;
+    background: var(--cabana-cream);
+  }
+  .composer-editor:empty::before {
+    content: attr(data-placeholder);
+    color: var(--cabana-green);
+    opacity: 0.45;
+    font-style: italic;
+  }
+  .composer-editor a { color: var(--cabana-orange); }
+  .composer-editor blockquote {
+    border-left: 3px solid var(--cabana-green);
+    padding-left: 12px;
+    margin: 8px 0;
+    color: var(--cabana-green);
+    font-style: italic;
+  }
+  .composer-editor ul, .composer-editor ol { padding-left: 22px; margin: 8px 0; }
+  .composer-editor.drag-over {
+    background: var(--orange-soft);
+    outline: 2px dashed var(--cabana-orange);
+    outline-offset: -8px;
+  }
+
+  .composer-quoted {
+    padding: 10px 16px;
+    background: var(--cream-dark);
+    border-top: 1px dashed var(--green-line);
+    font-size: 11px;
+    color: var(--cabana-green);
+  }
+  .composer-quoted-toggle {
+    cursor: pointer; user-select: none;
+    display: flex; align-items: center; gap: 6px;
+    color: var(--cabana-green);
+    font-family: var(--mono);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-size: 10px;
+  }
+  .composer-quoted-toggle:hover { color: var(--cabana-orange); }
+  .composer-quoted-content {
+    margin-top: 10px;
+    padding: 10px;
+    background: var(--cabana-cream);
+    border-left: 3px solid var(--cabana-green);
+    font-size: 12px;
+    line-height: 1.5;
+    color: var(--cabana-black);
+    max-height: 240px;
+    overflow-y: auto;
+    display: none;
+  }
+  .composer-quoted-content.visible { display: block; }
+
+  .composer-attachments {
+    padding: 10px 16px;
+    border-top: 1px solid var(--green-line);
+    background: var(--cabana-cream);
+  }
+  .composer-att-list {
+    display: flex; flex-wrap: wrap; gap: 5px;
+    margin-bottom: 8px;
+  }
+  .composer-att-list:empty { margin-bottom: 0; }
+  .composer-att-chip {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 4px 9px;
+    background: var(--cream-dark);
+    border: 1px solid var(--cabana-green);
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--cabana-black);
+  }
+  .composer-att-chip-name {
+    font-weight: 700;
+    max-width: 200px;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .composer-att-chip-size { color: var(--cabana-green); opacity: 0.6; font-size: 9px; }
+  .composer-att-chip-remove {
+    background: transparent; border: none;
+    color: var(--cabana-green); cursor: pointer;
+    padding: 0 2px; font-size: 13px; line-height: 1;
+  }
+  .composer-att-chip-remove:hover { color: var(--cabana-orange); }
+
+  .composer-att-actions {
+    display: flex; align-items: center; gap: 8px;
+    flex-wrap: wrap;
+  }
+  .composer-att-add {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 5px 10px;
+    border: 1px dashed var(--cabana-green);
+    background: transparent;
+    color: var(--cabana-green);
+    cursor: pointer;
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: all .12s;
+  }
+  .composer-att-add:hover { border-color: var(--cabana-orange); color: var(--cabana-orange); }
+  .composer-att-add svg { width: 12px; height: 12px; }
+  .composer-att-hint {
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--cabana-green);
+    opacity: 0.55;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .composer-footer {
+    padding: 10px 16px;
+    background: var(--cream-dark);
+    display: flex; justify-content: space-between; align-items: center;
+    gap: 8px;
+    border-top: 1px solid var(--green-line);
+  }
+  .composer-from-info {
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--cabana-green);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    opacity: 0.7;
+  }
+  .composer-from-info strong { color: var(--cabana-black); font-weight: 700; opacity: 1; }
+  .composer-actions { display: flex; gap: 6px; }
+
+  /* SEND CAIXA MODAL */
+  .send-caixa-list {
+    display: flex; flex-direction: column;
+    gap: 6px; margin-bottom: 14px;
+  }
+  .send-caixa-option {
+    padding: 12px 14px;
+    border: 1px solid var(--cabana-green);
+    background: var(--cabana-cream);
+    cursor: pointer;
+    transition: all .12s;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .send-caixa-option:hover { background: var(--green-soft); }
+  .send-caixa-option.selected {
+    background: var(--cabana-green);
+    color: var(--cabana-cream);
+    border-color: var(--cabana-green);
+  }
+  .send-caixa-radio {
+    width: 14px; height: 14px;
+    border-radius: 50%;
+    border: 2px solid var(--cabana-green);
+    flex-shrink: 0;
+    position: relative;
+    background: var(--cabana-cream);
+  }
+  .send-caixa-option.selected .send-caixa-radio {
+    background: var(--cabana-orange);
+    border-color: var(--cabana-cream);
+  }
+  .send-caixa-info { flex: 1; }
+  .send-caixa-name { font-weight: 700; font-size: 12px; }
+  .send-caixa-detail {
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--cabana-green);
+    opacity: 0.6;
+    margin-top: 2px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .send-caixa-option.selected .send-caixa-detail { color: var(--cabana-cream); opacity: 0.85; }
+
+  /* TOAST */
+  .toast {
+    position: fixed; bottom: 24px; right: 24px;
+    background: var(--cabana-black);
+    color: var(--cabana-cream);
+    border-left: 3px solid var(--cabana-orange);
+    padding: 12px 18px;
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    box-shadow: 4px 4px 0 var(--cabana-green);
+    z-index: 1500;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: all .25s;
+    pointer-events: none;
+  }
+  .toast.visible { opacity: 1; transform: translateY(0); }
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div class="login-screen" id="loginScreen">
+  <div class="login-card">
+    <div class="login-mark">CABANA · BURGERS REAIS</div>
+    <h1 class="login-title">Finance<br>Mail <em>Hub</em></h1>
+    <p class="login-sub">Triagem · 4 caixas · Outlook sync</p>
+    <input type="text" class="login-input" id="loginUser" placeholder="usuário" autocomplete="off">
+    <input type="password" class="login-input" id="loginPass" placeholder="senha" autocomplete="off">
+    <button class="login-btn" id="loginBtn">Entrar</button>
+    <div class="login-error" id="loginError"></div>
+  </div>
+</div>
+
+<!-- APP -->
+<div class="app" id="app">
+  <div class="topbar">
+    <div class="brand">
+      <div class="brand-logo">Finance Mail Hub<sup>®</sup></div>
+      <div class="brand-tag">CABANA</div>
+    </div>
+    <div class="top-actions">
+      <div class="top-stats" id="topStats">— · —</div>
+      <button class="icon-btn" id="refreshBtn" title="Recarregar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 0 1 15.5-6.4L21 8M21 3v5h-5M21 12a9 9 0 0 1-15.5 6.4L3 16m0 5v-5h5"/></svg>
+      </button>
+      <button class="icon-btn" id="settingsBtn" title="Configurações">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      </button>
+      <button class="icon-btn" id="logoutBtn" title="Sair">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- CMD STRIP - faixa A (creme escuro com texto verde) -->
+  <div class="cmd-strip">
+    <div class="cmd-stat"><span class="cmd-label">FISCAL</span><span class="cmd-val" id="cmd-fiscal">0</span></div>
+    <div class="cmd-stat"><span class="cmd-label">RECEBIMENTO</span><span class="cmd-val" id="cmd-recebimento">0</span></div>
+    <div class="cmd-stat"><span class="cmd-label">CONTAS A PAGAR</span><span class="cmd-val" id="cmd-contas">0</span></div>
+    <div class="cmd-stat"><span class="cmd-label">FINANCEIRO</span><span class="cmd-val" id="cmd-financeiro">0</span></div>
+    <div class="cmd-stat"><span class="cmd-label">DUPLICADOS</span><span class="cmd-val" id="cmd-dup">0</span></div>
+    <div class="cmd-spacer"></div>
+    <div class="cmd-stat cmd-sync"><span class="cmd-label">SYNC</span><span class="cmd-val" id="cmd-sync">—</span></div>
+  </div>
+
+  <div class="filter-strip">
+    <span class="filter-label">Caixa</span>
+    <button class="chip active" data-filter="todas">ALL <span class="chip-count" id="cnt-todas">0</span></button>
+    <button class="chip cx-fiscal" data-filter="fiscal"><span class="chip-dot"></span>Fiscal <span class="chip-count" id="cnt-fiscal">0</span></button>
+    <button class="chip cx-recebimento" data-filter="recebimento"><span class="chip-dot"></span>Recebimento <span class="chip-count" id="cnt-recebimento">0</span></button>
+    <button class="chip cx-contas" data-filter="contas"><span class="chip-dot"></span>Contas <span class="chip-count" id="cnt-contas">0</span></button>
+    <button class="chip cx-financeiro" data-filter="financeiro"><span class="chip-dot"></span>Financeiro <span class="chip-count" id="cnt-financeiro">0</span></button>
+
+    <span class="filter-divider"></span>
+    <span class="filter-label">Status</span>
+    <button class="chip active" data-status="todos">Todos</button>
+    <button class="chip" data-status="nao-classificado">Não classif.</button>
+    <button class="chip" data-status="duplicados">Duplicados <span class="chip-count" id="cnt-dup">0</span></button>
+  </div>
+
+  <div class="main">
+    <div class="list-col" id="listCol">
+      <div class="list-empty">Carregue suas caixas para começar.</div>
+    </div>
+    <div class="detail-col" id="detailCol">
+      <div class="detail-empty">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        <div>Selecione um email</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Settings -->
+<div class="modal-overlay" id="settingsModal">
+  <div class="modal">
+    <div class="modal-title">Configurações</div>
+    <div class="modal-sub">Webhooks do Power Automate</div>
+
+    <div class="modal-field">
+      <label>1) Webhook de busca (GET)</label>
+      <input type="text" id="cfgFetch" placeholder="https://prod-xx.eastus.logic.azure.com/...">
+      <div class="modal-field-help">Retorna array com emails das 4 caixas individuais. Cada item deve ter <code>caixa_origem</code>: "fiscal", "recebimento", "contas" ou "financeiro".</div>
+    </div>
+
+    <div class="modal-field">
+      <label>2) Webhook marcar lido (POST)</label>
+      <input type="text" id="cfgMarkRead" placeholder="https://prod-xx.eastus.logic.azure.com/...">
+      <div class="modal-field-help">Recebe <code>{ targets: [{ caixa_origem, message_id }] }</code> e atualiza isRead no Outlook.</div>
+    </div>
+
+    <div class="modal-field">
+      <label>3) Webhook anexo (POST)</label>
+      <input type="text" id="cfgAttachment" placeholder="https://prod-xx.eastus.logic.azure.com/...">
+      <div class="modal-field-help">Recebe <code>{ caixa_origem, message_id, attachment_id }</code> e retorna <code>{ name, contentType, contentBytes }</code> (base64).</div>
+    </div>
+
+    <div class="modal-field">
+      <label>4) Webhook envio (POST)</label>
+      <input type="text" id="cfgSend" placeholder="https://prod-xx.eastus.logic.azure.com/...">
+      <div class="modal-field-help">Envia/encaminha emails. Recebe <code>{ action, caixa_origem, message_id, to, cc, subject, body_html, attachments }</code>.</div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn" id="cancelSettings">Cancelar</button>
+      <button class="btn primary" id="saveSettings">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Preview Modal -->
+<div class="preview-overlay" id="previewOverlay">
+  <div class="preview-modal">
+    <div class="preview-header">
+      <div class="preview-title" id="previewTitle">Anexo</div>
+      <div class="preview-actions">
+        <button class="btn" id="previewDownload">↓ Baixar</button>
+        <button class="btn" id="previewClose">Fechar</button>
+      </div>
+    </div>
+    <div class="preview-body" id="previewBody"></div>
+  </div>
+</div>
+
+<!-- Send caixa Modal -->
+<div class="modal-overlay" id="sendCaixaModal">
+  <div class="modal">
+    <div class="modal-title">Qual caixa enviará?</div>
+    <div class="modal-sub">O email duplicado chegou em mais de uma caixa. Escolha qual delas envia a resposta.</div>
+    <div class="send-caixa-list" id="sendCaixaList"></div>
+    <div class="modal-actions">
+      <button class="btn" id="sendCaixaCancel">Cancelar</button>
+      <button class="btn primary" id="sendCaixaConfirm">Enviar</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ========================================================================
+   CABANA MAIL HUB v3
+   - Sync de leitura com Outlook (webhook POST)
+   - Anexos sob demanda (webhook POST com attachment_id)
+   - Preview inline de PDF/imagens, download via blob
+   ======================================================================== */
+
+(function(){
+  'use strict';
+
+  var CREDS = { user: 'cabana', pass: 'cabana@2026' };
+  var STORAGE_KEY = 'cabana_mail_hub_v3';
+  var CONFIG_KEY = 'cabana_mail_hub_cfg_v3';
+  var CACHE_KEY = 'cabana_mail_hub_cache_v3';
+
+  var CAIXAS = {
+    fiscal:       { label: 'Fiscal',             cls: 'cx-fiscal' },
+    recebimento:  { label: 'Recebimento Fiscal', cls: 'cx-recebimento' },
+    contas:       { label: 'Contas a Pagar',     cls: 'cx-contas' },
+    financeiro:   { label: 'Financeiro',         cls: 'cx-financeiro' }
+  };
+
+  var CATEGORIAS = [
+    { id: 'critico',      label: 'Crítico',          cls: 'crit'  },
+    { id: 'diretores',    label: 'Sócios/Diretores', cls: 'diret' },
+    { id: 'andamento',    label: 'Em Andamento',     cls: 'andam' },
+    { id: 'responder',    label: 'Responder',        cls: 'resp'  },
+    { id: 'fornecedores', label: 'Fornecedores',     cls: 'forn'  },
+    { id: 'ciencia',      label: 'Ciência',          cls: 'cien'  }
+  ];
+
+  var state = {
+    emails: [],
+    grupos: [],
+    selectedKey: null,
+    filterCaixa: 'todas',
+    filterStatus: 'todos',
+    classificacoes: {},
+    config: { fetchUrl: '', markReadUrl: '', attachmentUrl: '', sendUrl: '' },
+    attachmentCache: {}, // chave: msgId|attId → { name, contentType, contentBytes, blobUrl }
+    composer: null  // { mode: 'reply'|'replyAll'|'forward', to, cc, subject, body_html, attachments: [] }
+  };
+
+  function $(id) { return document.getElementById(id); }
+  function escapeHtml(s) {
+    if (s == null) return '';
+    return String(s)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+  }
+  function toast(msg) {
+    var t = $('toast');
+    t.textContent = msg;
+    t.classList.add('visible');
+    setTimeout(function() { t.classList.remove('visible'); }, 2400);
+  }
+  function fmtTime(iso) {
+    if (!iso) return '';
+    var d = new Date(iso);
+    if (isNaN(d.getTime())) return '';
+    var diffMin = Math.floor((new Date() - d) / 60000);
+    var diffH = Math.floor(diffMin / 60);
+    var diffD = Math.floor(diffH / 24);
+    if (diffMin < 60) return diffMin + 'min';
+    if (diffH < 24)   return diffH + 'h';
+    if (diffD < 7)    return diffD + 'd';
+    return String(d.getDate()).padStart(2, '0') + '/' + String(d.getMonth() + 1).padStart(2, '0');
+  }
+  function fmtSize(bytes) {
+    if (!bytes && bytes !== 0) return '';
+    if (bytes < 1024) return bytes + ' B';
+    if (bytes < 1024*1024) return (bytes/1024).toFixed(1) + ' KB';
+    return (bytes/(1024*1024)).toFixed(1) + ' MB';
+  }
+  function normalizeSubject(s) {
+    if (!s) return '';
+    return s.toLowerCase()
+      .replace(/^(re|res|fw|fwd|enc|encaminhado):\s*/gi, '')
+      .replace(/^(re|res|fw|fwd|enc):\s*/gi, '')
+      .replace(/\s+/g, ' ').trim();
+  }
+  function dayKey(iso) {
+    if (!iso) return '';
+    var d = new Date(iso);
+    return isNaN(d.getTime()) ? '' : d.toISOString().slice(0, 10);
+  }
+  function stripHtml(html) {
+    if (!html) return '';
+    var tmp = document.createElement('div');
+    tmp.innerHTML = html;
+    return tmp.textContent || tmp.innerText || '';
+  }
+  function getExt(name) {
+    if (!name) return '';
+    var m = name.match(/\.([^.]+)$/);
+    return m ? m[1].toLowerCase() : '';
+  }
+  function attachmentIconClass(name, contentType) {
+    var ext = getExt(name);
+    if (ext === 'pdf' || (contentType||'').indexOf('pdf') !== -1) return 'pdf';
+    if (ext === 'xml') return 'xml';
+    if (['png','jpg','jpeg','gif','webp','bmp','svg'].indexOf(ext) !== -1) return 'img';
+    if (['xls','xlsx','csv'].indexOf(ext) !== -1) return 'xls';
+    if (['doc','docx','txt','rtf'].indexOf(ext) !== -1) return 'doc';
+    return '';
+  }
+  function isPreviewable(name, contentType) {
+    var ext = getExt(name);
+    var ct = (contentType||'').toLowerCase();
+    if (ext === 'pdf' || ct.indexOf('pdf') !== -1) return 'pdf';
+    if (['png','jpg','jpeg','gif','webp','bmp'].indexOf(ext) !== -1 || ct.indexOf('image/') === 0) return 'image';
+    if (ext === 'xml' || ct.indexOf('xml') !== -1) return 'xml';
+    if (['txt','log','csv','json'].indexOf(ext) !== -1 || ct.indexOf('text/') === 0) return 'text';
+    return null;
+  }
+
+  function saveState() {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify({ classificacoes: state.classificacoes })); } catch(e) {}
+  }
+  function loadState() {
+    try {
+      var raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) state.classificacoes = JSON.parse(raw).classificacoes || {};
+    } catch(e) {}
+  }
+  function saveConfig() { try { localStorage.setItem(CONFIG_KEY, JSON.stringify(state.config)); } catch(e) {} }
+  function loadConfig() {
+    try {
+      var raw = localStorage.getItem(CONFIG_KEY);
+      if (raw) state.config = Object.assign(state.config, JSON.parse(raw));
+    } catch(e) {}
+  }
+  function saveCache() {
+    try { localStorage.setItem(CACHE_KEY, JSON.stringify({ ts: Date.now(), emails: state.emails })); } catch(e) {}
+  }
+  function loadCache() {
+    try {
+      var raw = localStorage.getItem(CACHE_KEY);
+      if (raw) {
+        var data = JSON.parse(raw);
+        if (data.emails && Array.isArray(data.emails)) {
+          state.emails = data.emails;
+          return data.ts;
+        }
+      }
+    } catch(e) {}
+    return null;
+  }
+
+  /* DEDUP */
+  function dedupEmails(emails) {
+    var byMsgId = {};
+    var byHeur = {};
+    var todos = [];
+
+    emails.forEach(function(e) {
+      var msgId = e.internetMessageId || e.internet_message_id || e.message_id;
+      if (msgId) {
+        if (!byMsgId[msgId]) byMsgId[msgId] = [];
+        byMsgId[msgId].push(e);
+      } else {
+        var heurKey = (e.from_email || e.from || '').toLowerCase() + '|' +
+                      normalizeSubject(e.subject) + '|' +
+                      dayKey(e.received_at || e.receivedDateTime);
+        if (!byHeur[heurKey]) byHeur[heurKey] = [];
+        byHeur[heurKey].push(e);
+      }
+    });
+
+    Object.keys(byMsgId).forEach(function(k) { todos.push(byMsgId[k]); });
+    Object.keys(byHeur).forEach(function(k) { todos.push(byHeur[k]); });
+
+    todos.forEach(function(grp) {
+      grp.sort(function(a, b) {
+        return new Date(b.received_at || b.receivedDateTime || 0) - new Date(a.received_at || a.receivedDateTime || 0);
+      });
+    });
+
+    return todos.map(function(grp) {
+      var caixas = grp.map(function(e) { return e.caixa_origem; })
+                       .filter(function(v, i, a) { return a.indexOf(v) === i; });
+      return {
+        key: grp[0].internetMessageId || grp[0].internet_message_id || grp[0].message_id ||
+             ((grp[0].from_email || grp[0].from || '') + '|' + normalizeSubject(grp[0].subject) + '|' + dayKey(grp[0].received_at || grp[0].receivedDateTime)),
+        principal: grp[0],
+        duplicados: grp.slice(1),
+        caixas: caixas,
+        isDup: grp.length > 1 || caixas.length > 1
+      };
+    }).sort(function(a, b) {
+      return new Date(b.principal.received_at || b.principal.receivedDateTime || 0) -
+             new Date(a.principal.received_at || a.principal.receivedDateTime || 0);
+    });
+  }
+
+  /* FETCH */
+  function fetchEmails() {
+    if (!state.config.fetchUrl) {
+      toast('Configure o webhook em Configurações');
+      $('settingsModal').classList.add('visible');
+      return;
+    }
+    var btn = $('refreshBtn');
+    btn.classList.add('spin');
+    btn.disabled = true;
+
+    fetch(state.config.fetchUrl, { method: 'GET' })
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        var emails = Array.isArray(data) ? data : (data.value || data.emails || data.results || []);
+        state.emails = emails;
+        saveCache();
+        rebuild();
+        toast(emails.length + ' emails carregados');
+      })
+      .catch(function(err) {
+        console.error(err);
+        toast('Erro ao buscar emails: ' + err.message);
+      })
+      .finally(function() {
+        btn.classList.remove('spin');
+        btn.disabled = false;
+      });
+  }
+
+  /* MARCAR LIDO NO OUTLOOK (todas as caixas do grupo) */
+  function syncMarkRead(grupo, isRead) {
+    if (!state.config.markReadUrl) {
+      // sem webhook configurado: apenas state local
+      return Promise.resolve(null);
+    }
+    var allCopies = [grupo.principal].concat(grupo.duplicados);
+    var targets = allCopies.map(function(cp) {
+      return {
+        caixa_origem: cp.caixa_origem,
+        message_id: cp.message_id || cp.id || cp.internetMessageId
+      };
+    });
+    return fetch(state.config.markReadUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ targets: targets, is_read: !!isRead })
+    })
+    .then(function(r) {
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return r.text();
+    });
+  }
+
+  /* BAIXAR ANEXO SOB DEMANDA */
+  function fetchAttachment(grupo, att) {
+    if (!state.config.attachmentUrl) {
+      return Promise.reject(new Error('Webhook de anexo não configurado'));
+    }
+    var msgId = grupo.principal.message_id || grupo.principal.id || grupo.principal.internetMessageId;
+    var attId = att.id || att.attachment_id;
+    var cacheKey = msgId + '|' + attId;
+
+    if (state.attachmentCache[cacheKey] && state.attachmentCache[cacheKey].blobUrl) {
+      return Promise.resolve(state.attachmentCache[cacheKey]);
+    }
+
+    return fetch(state.config.attachmentUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        caixa_origem: grupo.principal.caixa_origem,
+        message_id: msgId,
+        attachment_id: attId
+      })
+    })
+    .then(function(r) {
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return r.json();
+    })
+    .then(function(data) {
+      // espera { name, contentType, contentBytes (base64) }
+      var name = data.name || att.name;
+      var ct = data.contentType || att.contentType || 'application/octet-stream';
+      var b64 = data.contentBytes || data.content_bytes || data.contentbytes;
+      if (!b64) throw new Error('Resposta sem contentBytes');
+
+      // converter base64 → blob
+      var binary = atob(b64);
+      var len = binary.length;
+      var bytes = new Uint8Array(len);
+      for (var i = 0; i < len; i++) bytes[i] = binary.charCodeAt(i);
+      var blob = new Blob([bytes], { type: ct });
+      var blobUrl = URL.createObjectURL(blob);
+
+      var entry = { name: name, contentType: ct, blob: blob, blobUrl: blobUrl };
+      state.attachmentCache[cacheKey] = entry;
+      return entry;
+    });
+  }
+
+  function downloadBlob(blob, filename) {
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(function() {
+      URL.revokeObjectURL(a.href);
+      document.body.removeChild(a);
+    }, 100);
+  }
+
+  /* RENDER */
+  function rebuild() {
+    state.grupos = dedupEmails(state.emails);
+    renderCounts();
+    renderList();
+  }
+
+  function renderCounts() {
+    var counts = { todas: 0, fiscal: 0, recebimento: 0, contas: 0, financeiro: 0, dup: 0 };
+    state.grupos.forEach(function(g) {
+      counts.todas++;
+      if (g.isDup) counts.dup++;
+      g.caixas.forEach(function(c) { if (counts[c] !== undefined) counts[c]++; });
+    });
+    // chips
+    $('cnt-todas').textContent = counts.todas;
+    $('cnt-fiscal').textContent = counts.fiscal;
+    $('cnt-recebimento').textContent = counts.recebimento;
+    $('cnt-contas').textContent = counts.contas;
+    $('cnt-financeiro').textContent = counts.financeiro;
+    $('cnt-dup').textContent = counts.dup;
+
+    // cmd-strip
+    if ($('cmd-fiscal'))      $('cmd-fiscal').textContent = counts.fiscal;
+    if ($('cmd-recebimento')) $('cmd-recebimento').textContent = counts.recebimento;
+    if ($('cmd-contas'))      $('cmd-contas').textContent = counts.contas;
+    if ($('cmd-financeiro'))  $('cmd-financeiro').textContent = counts.financeiro;
+    if ($('cmd-dup'))         $('cmd-dup').textContent = counts.dup;
+    if ($('cmd-sync')) {
+      var syncEl = $('cmd-sync');
+      if (state.config.fetchUrl) {
+        syncEl.textContent = 'OK';
+        syncEl.classList.remove('warn');
+      } else {
+        syncEl.textContent = 'OFF';
+        syncEl.classList.add('warn');
+      }
+    }
+
+    $('topStats').textContent = state.emails.length + ' BRUTOS · ' + counts.dup + ' DUPLICADOS · ' + counts.todas + ' ÚNICOS';
+  }
+
+  function applyFilters(grupos) {
+    return grupos.filter(function(g) {
+      if (state.filterCaixa !== 'todas') {
+        if (g.caixas.indexOf(state.filterCaixa) === -1) return false;
+      }
+      var clf = state.classificacoes[g.key];
+      if (state.filterStatus === 'nao-classificado') {
+        if (clf && clf.categoria) return false;
+      } else if (state.filterStatus === 'duplicados') {
+        if (!g.isDup) return false;
+      }
+      return true;
+    });
+  }
+
+  function renderList() {
+    var col = $('listCol');
+    var grupos = applyFilters(state.grupos);
+
+    if (grupos.length === 0) {
+      col.innerHTML = '<div class="list-empty">Nenhum email com esses filtros.</div>';
+      return;
+    }
+
+    col.innerHTML = '';
+    grupos.forEach(function(g) {
+      var e = g.principal;
+      var clf = state.classificacoes[g.key] || {};
+      var cat = CATEGORIAS.find(function(c){ return c.id === clf.categoria; });
+      var unread = e.unread !== false && !e.is_read && clf.status !== 'lido';
+
+      var row = document.createElement('div');
+      row.className = 'email-row' + (unread ? ' unread' : '') + (state.selectedKey === g.key ? ' selected' : '');
+      row.onclick = function() { selectGroup(g.key); };
+
+      var caixasHtml = g.caixas.map(function(c) {
+        var cx = CAIXAS[c];
+        return '<span class="badge ' + (cx ? cx.cls : '') + '">' + (cx ? cx.label : c) + '</span>';
+      }).join('');
+
+      var dupHtml = g.isDup ? '<span class="badge dup">⧉ ' + (g.duplicados.length + 1) + 'x</span>' : '';
+      var catHtml = cat ? '<span class="badge cat ' + cat.cls + '">' + cat.label + '</span>' : '';
+
+      var attCount = (e.attachments || []).length;
+      var attHtml = attCount > 0 ? '<span class="badge att">📎 ' + attCount + '</span>' : '';
+
+      var preview = stripHtml(e.body_html || e.body || e.preview || '').slice(0, 200);
+
+      row.innerHTML =
+        '<div class="email-row-top">' +
+          '<div class="email-from">' + escapeHtml(e.from_name || e.from || e.from_email || '—') + '</div>' +
+          '<div class="email-time">' + escapeHtml(fmtTime(e.received_at || e.receivedDateTime)) + '</div>' +
+        '</div>' +
+        '<div class="email-subject">' + escapeHtml(e.subject || '(sem assunto)') + '</div>' +
+        '<div class="email-preview">' + escapeHtml(preview) + '</div>' +
+        '<div class="email-meta">' + caixasHtml + dupHtml + attHtml + catHtml + '</div>';
+
+      col.appendChild(row);
+    });
+  }
+
+  function selectGroup(key) {
+    state.selectedKey = key;
+    renderList();
+    renderDetail();
+  }
+
+  function renderAttachments(grupo) {
+    var atts = grupo.principal.attachments || [];
+    if (atts.length === 0) return '';
+
+    var itemsHtml = atts.map(function(a, idx) {
+      var iconCls = attachmentIconClass(a.name, a.contentType);
+      var ext = getExt(a.name) || '?';
+      return '<div class="attachment-item" data-att-idx="' + idx + '">' +
+        '<div class="attachment-icon ' + iconCls + '">' + ext + '</div>' +
+        '<div class="attachment-info">' +
+          '<div class="attachment-name">' + escapeHtml(a.name || 'anexo') + '</div>' +
+          '<div class="attachment-meta">' + escapeHtml(fmtSize(a.size)) + (a.contentType ? ' · ' + escapeHtml(a.contentType) : '') + '</div>' +
+        '</div>' +
+        '<div class="attachment-actions">' +
+          '<button class="attachment-btn att-preview" data-idx="' + idx + '" title="Visualizar">' +
+            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>' +
+          '</button>' +
+          '<button class="attachment-btn att-download" data-idx="' + idx + '" title="Baixar">' +
+            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>' +
+          '</button>' +
+        '</div>' +
+      '</div>';
+    }).join('');
+
+    return '<div class="attachments-section">' +
+      '<div class="attachments-header">' +
+        '<span>📎 Anexos · ' + atts.length + '</span>' +
+      '</div>' +
+      '<div class="attachments-list">' + itemsHtml + '</div>' +
+    '</div>';
+  }
+
+  function renderDetail() {
+    var col = $('detailCol');
+    if (!state.selectedKey) {
+      col.innerHTML = '<div class="detail-empty">' +
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>' +
+        '<div>Selecione um email</div></div>';
+      return;
+    }
+    var grupo = state.grupos.find(function(g){ return g.key === state.selectedKey; });
+    if (!grupo) {
+      col.innerHTML = '<div class="detail-empty"><div>Email não encontrado</div></div>';
+      return;
+    }
+    var e = grupo.principal;
+    var clf = state.classificacoes[grupo.key] || {};
+
+    var caixasHtml = grupo.caixas.map(function(c) {
+      var cx = CAIXAS[c];
+      return '<span class="badge ' + (cx ? cx.cls : '') + '">' + (cx ? cx.label : c) + '</span>';
+    }).join(' ');
+
+    var dupListHtml = '';
+    if (grupo.isDup) {
+      var allCopies = [grupo.principal].concat(grupo.duplicados);
+      dupListHtml = '<div class="duplicate-list">';
+      allCopies.forEach(function(cp) {
+        var cx = CAIXAS[cp.caixa_origem];
+        var t = new Date(cp.received_at || cp.receivedDateTime);
+        var ts = isNaN(t.getTime()) ? '' : t.toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' });
+        dupListHtml += '<div class="duplicate-list-item">→ ' + (cx ? cx.label : cp.caixa_origem) + ' · ' + ts + '</div>';
+      });
+      dupListHtml += '</div>';
+    }
+
+    var dupBanner = grupo.isDup ?
+      '<div class="duplicate-banner"><strong>⧉ Email duplicado.</strong> Recebido em ' + grupo.caixas.length +
+      ' caixa(s) · ' + (grupo.duplicados.length + 1) + ' cópia(s) total. Marcar lido sincroniza nas ' + grupo.caixas.length + '.' + dupListHtml + '</div>' : '';
+
+    var catOptions = '<option value="">— sem categoria —</option>' +
+      CATEGORIAS.map(function(c) {
+        return '<option value="' + c.id + '"' + (clf.categoria === c.id ? ' selected' : '') + '>' + c.label + '</option>';
+      }).join('');
+
+    var receivedFormatted = '';
+    var rcvDate = new Date(e.received_at || e.receivedDateTime);
+    if (!isNaN(rcvDate.getTime())) {
+      receivedFormatted = rcvDate.toLocaleString('pt-BR', { dateStyle: 'medium', timeStyle: 'short' });
+    }
+
+    var bodyHtml = e.body_html ?
+      '<iframe id="bodyFrame" sandbox="allow-same-origin"></iframe>' :
+      '<div>' + escapeHtml(e.body || e.preview || '(sem corpo)') + '</div>';
+
+    col.innerHTML =
+      '<div class="detail">' +
+        '<div class="detail-header">' +
+          '<div class="detail-subject">' + escapeHtml(e.subject || '(sem assunto)') + '</div>' +
+          '<div class="detail-meta-row">' +
+            '<span><strong>' + escapeHtml(e.from_name || e.from || '') + '</strong>' +
+              (e.from_email ? ' &lt;' + escapeHtml(e.from_email) + '&gt;' : '') + '</span>' +
+            '<span class="sep">·</span>' +
+            '<span>' + escapeHtml(receivedFormatted) + '</span>' +
+          '</div>' +
+          (e.to ? '<div class="detail-meta-row"><span class="sep">para</span> ' + escapeHtml(Array.isArray(e.to) ? e.to.join(', ') : e.to) + '</div>' : '') +
+          '<div class="detail-meta-row">' + caixasHtml + '</div>' +
+          dupBanner +
+        '</div>' +
+
+        '<div class="action-bar">' +
+          '<select class="cat-select" id="catSelect">' + catOptions + '</select>' +
+          '<button class="btn primary" id="btnReply">↩ RESPONDER</button>' +
+          '<button class="btn" id="btnReplyAll">↩↩ TODOS</button>' +
+          '<button class="btn" id="btnForward">↪ ENCAMINHAR</button>' +
+          '<button class="btn" id="markRead">' + (clf.status === 'lido' ? '↺ NÃO LIDO' : '✓ LIDO') + '</button>' +
+          '<button class="btn" id="markResponded">' + (clf.status === 'respondido' ? '↺ NÃO RESP.' : '✓ RESP.') + '</button>' +
+          '<button class="btn" id="markArchived">' + (clf.status === 'arquivado' ? '↺ DESARQ.' : '⌫ ARQUIVAR') + '</button>' +
+        '</div>' +
+
+        '<div id="composerSlot"></div>' +
+
+        renderAttachments(grupo) +
+
+        '<div class="detail-body">' + bodyHtml + '</div>' +
+      '</div>';
+
+    if (e.body_html) {
+      setTimeout(function() {
+        var iframe = $('bodyFrame');
+        if (iframe) {
+          var doc = iframe.contentDocument || iframe.contentWindow.document;
+          doc.open();
+          doc.write('<!DOCTYPE html><html><head><meta charset="UTF-8"><base target="_blank"><style>body{font-family:Inter,sans-serif;font-size:13px;line-height:1.65;color:#0A0A0A;padding:8px;margin:0;background:#F6F0E1;} a{color:#FF5028;} img{max-width:100%;height:auto;} table{max-width:100%;}</style></head><body>' + e.body_html + '</body></html>');
+          doc.close();
+          setTimeout(function() {
+            try { iframe.style.height = (iframe.contentDocument.body.scrollHeight + 20) + 'px'; } catch(err) {}
+          }, 100);
+        }
+      }, 50);
+    }
+
+    $('catSelect').onchange = function(ev) {
+      state.classificacoes[grupo.key] = state.classificacoes[grupo.key] || {};
+      state.classificacoes[grupo.key].categoria = ev.target.value;
+      saveState();
+      renderList();
+    };
+
+    $('markRead').onclick = function() {
+      var becomingRead = clf.status !== 'lido';
+      var btn = $('markRead');
+      btn.disabled = true;
+      btn.textContent = 'Sincronizando...';
+
+      syncMarkRead(grupo, becomingRead)
+        .then(function() {
+          state.classificacoes[grupo.key] = state.classificacoes[grupo.key] || {};
+          state.classificacoes[grupo.key].status = becomingRead ? 'lido' : null;
+          saveState();
+          if (becomingRead) {
+            // atualiza is_read no estado em memória pra UI
+            [grupo.principal].concat(grupo.duplicados).forEach(function(cp) { cp.is_read = true; });
+          }
+          toast(becomingRead ? 'Marcado lido em ' + grupo.caixas.length + ' caixa(s)' : 'Marcado não lido');
+          renderDetail();
+          renderList();
+        })
+        .catch(function(err) {
+          toast('Erro ao sincronizar: ' + err.message);
+          btn.disabled = false;
+          btn.textContent = clf.status === 'lido' ? '↺ Marcar não lido' : '✓ Marcar lido';
+        });
+    };
+
+    $('markResponded').onclick = function() {
+      state.classificacoes[grupo.key] = state.classificacoes[grupo.key] || {};
+      state.classificacoes[grupo.key].status = clf.status === 'respondido' ? null : 'respondido';
+      saveState();
+      renderDetail();
+      renderList();
+    };
+
+    $('markArchived').onclick = function() {
+      state.classificacoes[grupo.key] = state.classificacoes[grupo.key] || {};
+      state.classificacoes[grupo.key].status = clf.status === 'arquivado' ? null : 'arquivado';
+      saveState();
+      renderDetail();
+      renderList();
+    };
+
+    // botões de resposta
+    $('btnReply').onclick = function() { openComposer(grupo, 'reply'); };
+    $('btnReplyAll').onclick = function() { openComposer(grupo, 'replyAll'); };
+    $('btnForward').onclick = function() { openComposer(grupo, 'forward'); };
+
+    // se já tem composer aberto, renderiza
+    if (state.composer && state.composer.groupKey === grupo.key) {
+      renderComposer();
+    }
+
+    // wire anexos
+    document.querySelectorAll('.att-preview').forEach(function(b) {
+      b.onclick = function(ev) {
+        ev.stopPropagation();
+        var idx = parseInt(b.dataset.idx, 10);
+        previewAttachment(grupo, idx);
+      };
+    });
+    document.querySelectorAll('.att-download').forEach(function(b) {
+      b.onclick = function(ev) {
+        ev.stopPropagation();
+        var idx = parseInt(b.dataset.idx, 10);
+        downloadAttachment(grupo, idx);
+      };
+    });
+    // clicar no item inteiro = preview
+    document.querySelectorAll('.attachment-item').forEach(function(item) {
+      item.onclick = function(ev) {
+        if (ev.target.closest('.attachment-btn')) return;
+        var idx = parseInt(item.dataset.attIdx, 10);
+        previewAttachment(grupo, idx);
+      };
+    });
+  }
+
+  /* ========== COMPOSER (Reply/ReplyAll/Forward) ========== */
+
+  function openComposer(grupo, mode) {
+    var e = grupo.principal;
+    var to = '', cc = '', subject = '';
+    var quotedHtml = buildQuotedBlock(e);
+
+    var subjPrefix = mode === 'forward' ? 'Enc: ' : 'Re: ';
+    var origSubj = (e.subject || '').replace(/^(re|res|enc|fw|fwd):\s*/i, '');
+    subject = subjPrefix + origSubj;
+
+    if (mode === 'reply') {
+      to = e.from_email || e.from || '';
+    } else if (mode === 'replyAll') {
+      to = e.from_email || e.from || '';
+      // CC = todos os outros destinatários originais menos o próprio remetente da caixa
+      var origTo = Array.isArray(e.to) ? e.to : (e.to ? [e.to] : []);
+      var origCc = Array.isArray(e.cc) ? e.cc : (e.cc ? [e.cc] : []);
+      var allOthers = origTo.concat(origCc).filter(function(x) {
+        if (!x) return false;
+        var em = (typeof x === 'string') ? x : (x.email || x.address || '');
+        // remove a caixa Cabana correspondente
+        return em && em.toLowerCase().indexOf('cabana') === -1; // heurística simples
+      }).map(function(x) { return typeof x === 'string' ? x : (x.email || x.address || ''); });
+      cc = allOthers.join(', ');
+    } else if (mode === 'forward') {
+      to = '';
+    }
+
+    // anexos pré-carregados (caso forward, podemos clonar)
+    var preAttachments = [];
+    if (mode === 'forward' && (e.attachments || []).length > 0) {
+      // marca os anexos pra serem reanexados (vão ser baixados sob demanda no envio)
+      preAttachments = (e.attachments || []).map(function(a) {
+        return {
+          name: a.name,
+          contentType: a.contentType,
+          size: a.size,
+          fromOriginal: true,
+          attachment_id: a.id || a.attachment_id
+        };
+      });
+    }
+
+    state.composer = {
+      groupKey: grupo.key,
+      mode: mode,
+      to: to,
+      cc: cc,
+      subject: subject,
+      body_html: '',  // o que o usuário digita
+      quoted_html: quotedHtml,
+      quoted_visible: false,
+      attachments: preAttachments
+    };
+    renderComposer();
+    setTimeout(function() {
+      var ed = $('composerEditor');
+      if (ed) ed.focus();
+    }, 100);
+  }
+
+  function buildQuotedBlock(e) {
+    var rcvDate = new Date(e.received_at || e.receivedDateTime);
+    var dateStr = isNaN(rcvDate.getTime()) ? '' : rcvDate.toLocaleString('pt-BR', { dateStyle: 'long', timeStyle: 'short' });
+    var fromLine = (e.from_name || e.from || '') + (e.from_email ? ' <' + e.from_email + '>' : '');
+    var toLine = '';
+    if (e.to) toLine = Array.isArray(e.to) ? e.to.join(', ') : e.to;
+
+    var header = '<div style="margin-bottom:10px;font-family:Inter,sans-serif;font-size:12px;color:#0A6B2C;">' +
+      '<div><b>De:</b> ' + escapeHtml(fromLine) + '</div>' +
+      (dateStr ? '<div><b>Enviado em:</b> ' + escapeHtml(dateStr) + '</div>' : '') +
+      (toLine ? '<div><b>Para:</b> ' + escapeHtml(toLine) + '</div>' : '') +
+      '<div><b>Assunto:</b> ' + escapeHtml(e.subject || '') + '</div>' +
+    '</div>';
+
+    var body = e.body_html || ('<pre style="white-space:pre-wrap;font-family:inherit;">' + escapeHtml(e.body || '') + '</pre>');
+    return header + '<hr style="border:none;border-top:1px solid rgba(10,107,44,0.2);margin:8px 0;"/>' + body;
+  }
+
+  function modeLabel(mode) {
+    if (mode === 'reply')    return '↩ Responder';
+    if (mode === 'replyAll') return '↩↩ Responder a todos';
+    if (mode === 'forward')  return '↪ Encaminhar';
+    return '';
+  }
+
+  function renderComposer() {
+    var slot = $('composerSlot');
+    if (!slot || !state.composer) return;
+    var c = state.composer;
+    var grupo = state.grupos.find(function(g){ return g.key === c.groupKey; });
+    if (!grupo) return;
+
+    var caixaOrigin = grupo.caixas.length === 1 ? CAIXAS[grupo.caixas[0]].label : grupo.caixas.length + ' caixas';
+
+    slot.innerHTML =
+      '<div class="composer-section">' +
+        '<div class="composer-header">' +
+          '<div class="composer-mode-label">' + modeLabel(c.mode) + '</div>' +
+          '<button class="composer-close" id="compClose" title="Fechar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>' +
+        '</div>' +
+
+        '<div class="composer-fields">' +
+          '<div class="composer-field-row">' +
+            '<span class="composer-field-label">Para</span>' +
+            '<input class="composer-field-input" id="compTo" type="text" value="' + escapeHtml(c.to) + '" placeholder="email@exemplo.com">' +
+          '</div>' +
+          '<div class="composer-field-row">' +
+            '<span class="composer-field-label">Cc</span>' +
+            '<input class="composer-field-input" id="compCc" type="text" value="' + escapeHtml(c.cc) + '" placeholder="opcional">' +
+          '</div>' +
+          '<div class="composer-field-row">' +
+            '<span class="composer-field-label">Assunto</span>' +
+            '<input class="composer-field-input" id="compSubject" type="text" value="' + escapeHtml(c.subject) + '">' +
+          '</div>' +
+        '</div>' +
+
+        '<div class="composer-toolbar" id="compToolbar">' +
+          '<button class="toolbar-btn" data-cmd="bold" title="Negrito (Ctrl+B)"><b>B</b></button>' +
+          '<button class="toolbar-btn" data-cmd="italic" title="Itálico (Ctrl+I)"><i>I</i></button>' +
+          '<button class="toolbar-btn" data-cmd="underline" title="Sublinhado (Ctrl+U)"><u>U</u></button>' +
+          '<button class="toolbar-btn" data-cmd="strikeThrough" title="Tachado"><s>S</s></button>' +
+          '<span class="toolbar-divider"></span>' +
+          '<button class="toolbar-btn" data-cmd="insertUnorderedList" title="Lista"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><circle cx="4" cy="6" r="1" fill="currentColor"/><circle cx="4" cy="12" r="1" fill="currentColor"/><circle cx="4" cy="18" r="1" fill="currentColor"/></svg></button>' +
+          '<button class="toolbar-btn" data-cmd="insertOrderedList" title="Lista numerada"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="10" y1="6" x2="21" y2="6"/><line x1="10" y1="12" x2="21" y2="12"/><line x1="10" y1="18" x2="21" y2="18"/><path d="M4 6h1v4M4 10h2M6 18H4c0-1 2-2 2-3s-1-1.5-2-1"/></svg></button>' +
+          '<span class="toolbar-divider"></span>' +
+          '<button class="toolbar-btn" data-cmd="formatBlock" data-arg="blockquote" title="Citação">"</button>' +
+          '<button class="toolbar-btn" id="compLink" title="Link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></button>' +
+          '<span class="toolbar-divider"></span>' +
+          '<span class="toolbar-color" style="background:#0A0A0A" data-color="#0A0A0A" title="Preto"></span>' +
+          '<span class="toolbar-color" style="background:#0A6B2C" data-color="#0A6B2C" title="Verde Cabana"></span>' +
+          '<span class="toolbar-color" style="background:#FF5028" data-color="#FF5028" title="Laranja"></span>' +
+          '<span class="toolbar-color" style="background:#A8E067" data-color="#A8E067" title="Verde digital"></span>' +
+          '<span class="toolbar-color" style="background:#2D5878" data-color="#2D5878" title="Azul"></span>' +
+          '<span class="toolbar-divider"></span>' +
+          '<button class="toolbar-btn" id="compClearFormat" title="Limpar formatação"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 7 10 7 13 4"/><path d="M14 6l6 6"/><line x1="9" y1="20" x2="20" y2="20"/></svg></button>' +
+        '</div>' +
+
+        '<div class="composer-editor" id="composerEditor" contenteditable="true" data-placeholder="Escreva sua mensagem..."></div>' +
+
+        '<div class="composer-attachments">' +
+          '<div class="composer-att-list" id="compAttList"></div>' +
+          '<div class="composer-att-actions">' +
+            '<label class="composer-att-add">' +
+              '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>' +
+              '<span>Anexar arquivo</span>' +
+              '<input type="file" id="compFileInput" multiple style="display:none">' +
+            '</label>' +
+            '<span class="composer-att-hint">ou arraste e solte no editor</span>' +
+          '</div>' +
+        '</div>' +
+
+        '<div class="composer-quoted">' +
+          '<div class="composer-quoted-toggle" id="compQuotedToggle">' +
+            '<span id="compQuotedArrow">▸</span>' +
+            '<span>Mensagem original</span>' +
+          '</div>' +
+          '<div class="composer-quoted-content" id="compQuotedContent">' + c.quoted_html + '</div>' +
+        '</div>' +
+
+        '<div class="composer-footer">' +
+          '<div class="composer-from-info">Enviar de: <strong>' + escapeHtml(caixaOrigin) + '</strong></div>' +
+          '<div class="composer-actions">' +
+            '<button class="btn" id="compCancel">Descartar</button>' +
+            '<button class="btn primary" id="compSend">Enviar →</button>' +
+          '</div>' +
+        '</div>' +
+      '</div>';
+
+    // restaurar conteúdo já digitado
+    var ed = $('composerEditor');
+    if (c.body_html) ed.innerHTML = c.body_html;
+
+    wireComposer(grupo);
+    renderComposerAttachments();
+  }
+
+  function wireComposer(grupo) {
+    var c = state.composer;
+    var ed = $('composerEditor');
+
+    // toolbar
+    document.querySelectorAll('#compToolbar .toolbar-btn[data-cmd]').forEach(function(b) {
+      b.onmousedown = function(ev) { ev.preventDefault(); }; // mantém seleção
+      b.onclick = function() {
+        var cmd = b.dataset.cmd;
+        var arg = b.dataset.arg || null;
+        try { document.execCommand(cmd, false, arg); } catch(e) {}
+        ed.focus();
+      };
+    });
+
+    // cores
+    document.querySelectorAll('#compToolbar .toolbar-color').forEach(function(sw) {
+      sw.onmousedown = function(ev) { ev.preventDefault(); };
+      sw.onclick = function() {
+        try { document.execCommand('foreColor', false, sw.dataset.color); } catch(e) {}
+        ed.focus();
+      };
+    });
+
+    // link
+    $('compLink').onmousedown = function(ev) { ev.preventDefault(); };
+    $('compLink').onclick = function() {
+      var url = prompt('URL do link:', 'https://');
+      if (url) {
+        try { document.execCommand('createLink', false, url); } catch(e) {}
+      }
+      ed.focus();
+    };
+
+    // limpar formatação
+    $('compClearFormat').onmousedown = function(ev) { ev.preventDefault(); };
+    $('compClearFormat').onclick = function() {
+      try { document.execCommand('removeFormat', false, null); } catch(e) {}
+      ed.focus();
+    };
+
+    // sync conteúdo
+    ed.oninput = function() { c.body_html = ed.innerHTML; };
+
+    // shortcuts
+    ed.onkeydown = function(ev) {
+      if ((ev.ctrlKey || ev.metaKey)) {
+        if (ev.key === 'b' || ev.key === 'i' || ev.key === 'u') {
+          // navegador faz natural
+        } else if (ev.key === 'Enter') {
+          ev.preventDefault();
+          $('compSend').click();
+        }
+      }
+    };
+
+    // drag/drop arquivos no editor
+    ed.ondragover = function(ev) {
+      if (ev.dataTransfer && ev.dataTransfer.types && ev.dataTransfer.types.indexOf('Files') !== -1) {
+        ev.preventDefault();
+        ed.classList.add('drag-over');
+      }
+    };
+    ed.ondragleave = function() { ed.classList.remove('drag-over'); };
+    ed.ondrop = function(ev) {
+      ev.preventDefault();
+      ed.classList.remove('drag-over');
+      var files = ev.dataTransfer.files;
+      if (files && files.length) addFilesToComposer(files);
+    };
+
+    // file input
+    $('compFileInput').onchange = function(ev) {
+      if (ev.target.files && ev.target.files.length) {
+        addFilesToComposer(ev.target.files);
+        ev.target.value = '';
+      }
+    };
+
+    // input de campos
+    $('compTo').oninput = function(ev) { c.to = ev.target.value; };
+    $('compCc').oninput = function(ev) { c.cc = ev.target.value; };
+    $('compSubject').oninput = function(ev) { c.subject = ev.target.value; };
+
+    // quoted toggle
+    $('compQuotedToggle').onclick = function() {
+      c.quoted_visible = !c.quoted_visible;
+      $('compQuotedContent').classList.toggle('visible', c.quoted_visible);
+      $('compQuotedArrow').textContent = c.quoted_visible ? '▾' : '▸';
+    };
+    if (c.quoted_visible) {
+      $('compQuotedContent').classList.add('visible');
+      $('compQuotedArrow').textContent = '▾';
+    }
+
+    // close / cancel / send
+    $('compClose').onclick = closeComposer;
+    $('compCancel').onclick = function() {
+      if (c.body_html || c.attachments.length > 0) {
+        if (!confirm('Descartar o rascunho?')) return;
+      }
+      closeComposer();
+    };
+    $('compSend').onclick = function() { tryToSend(grupo); };
+  }
+
+  function closeComposer() {
+    state.composer = null;
+    var slot = $('composerSlot');
+    if (slot) slot.innerHTML = '';
+  }
+
+  function addFilesToComposer(fileList) {
+    var c = state.composer;
+    if (!c) return;
+    var arr = Array.from(fileList);
+    var promises = arr.map(function(file) {
+      return new Promise(function(resolve, reject) {
+        var reader = new FileReader();
+        reader.onload = function() {
+          // result é "data:mime;base64,XXXX" — extrair só o base64
+          var dataUrl = reader.result;
+          var b64 = dataUrl.split(',')[1] || '';
+          resolve({
+            name: file.name,
+            contentType: file.type || 'application/octet-stream',
+            size: file.size,
+            contentBytes: b64,
+            fromOriginal: false
+          });
+        };
+        reader.onerror = function() { reject(new Error('Erro ao ler ' + file.name)); };
+        reader.readAsDataURL(file);
+      });
+    });
+    Promise.all(promises).then(function(items) {
+      // limite total ~30MB pra evitar problemas no Power Automate
+      var totalSize = c.attachments.reduce(function(s, a) { return s + (a.size || 0); }, 0);
+      var added = 0;
+      items.forEach(function(it) {
+        totalSize += it.size || 0;
+        if (totalSize > 30 * 1024 * 1024) {
+          toast('Limite de 30MB atingido — alguns arquivos não foram anexados');
+          return;
+        }
+        c.attachments.push(it);
+        added++;
+      });
+      if (added > 0) toast(added + ' anexo(s) adicionado(s)');
+      renderComposerAttachments();
+    }).catch(function(err) { toast(err.message); });
+  }
+
+  function renderComposerAttachments() {
+    var list = $('compAttList');
+    if (!list) return;
+    var c = state.composer;
+    list.innerHTML = '';
+    c.attachments.forEach(function(a, idx) {
+      var chip = document.createElement('span');
+      chip.className = 'composer-att-chip';
+      chip.innerHTML =
+        '<span>📎</span>' +
+        '<span class="composer-att-chip-name">' + escapeHtml(a.name) + '</span>' +
+        '<span class="composer-att-chip-size">' + escapeHtml(fmtSize(a.size)) + '</span>' +
+        (a.fromOriginal ? '<span class="composer-att-chip-size" style="color:var(--accent)">(original)</span>' : '') +
+        '<button class="composer-att-chip-remove" title="Remover">×</button>';
+      chip.querySelector('.composer-att-chip-remove').onclick = function() {
+        c.attachments.splice(idx, 1);
+        renderComposerAttachments();
+      };
+      list.appendChild(chip);
+    });
+  }
+
+  /* ========== ENVIO ========== */
+
+  function tryToSend(grupo) {
+    var c = state.composer;
+    if (!c) return;
+
+    // validações
+    if (!c.to || !c.to.trim()) { toast('Informe o destinatário'); $('compTo').focus(); return; }
+    if (!c.subject || !c.subject.trim()) {
+      if (!confirm('Enviar sem assunto?')) return;
+    }
+    if (!c.body_html || stripHtml(c.body_html).trim().length === 0) {
+      if (!confirm('Enviar com corpo vazio?')) return;
+    }
+    if (!state.config.sendUrl) {
+      toast('Configure o webhook de envio em Configurações');
+      return;
+    }
+
+    // se duplicado, perguntar qual caixa envia
+    if (grupo.caixas.length > 1) {
+      askWhichCaixa(grupo, function(chosenCaixa) {
+        doSend(grupo, chosenCaixa);
+      });
+    } else {
+      doSend(grupo, grupo.caixas[0]);
+    }
+  }
+
+  function askWhichCaixa(grupo, cb) {
+    var modal = $('sendCaixaModal');
+    var list = $('sendCaixaList');
+    list.innerHTML = '';
+    var chosen = grupo.caixas[0];
+
+    grupo.caixas.forEach(function(c, idx) {
+      var cx = CAIXAS[c];
+      var copy = [grupo.principal].concat(grupo.duplicados).find(function(cp) { return cp.caixa_origem === c; });
+      var fromAddr = copy ? (copy.received_to || copy.mailbox || cx.label) : cx.label;
+      var opt = document.createElement('div');
+      opt.className = 'send-caixa-option' + (idx === 0 ? ' selected' : '');
+      opt.innerHTML =
+        '<div class="send-caixa-radio"></div>' +
+        '<div class="send-caixa-info">' +
+          '<div class="send-caixa-name">' + escapeHtml(cx.label) + '</div>' +
+          '<div class="send-caixa-detail">' + escapeHtml(fromAddr) + '</div>' +
+        '</div>';
+      opt.onclick = function() {
+        list.querySelectorAll('.send-caixa-option').forEach(function(x){ x.classList.remove('selected'); });
+        opt.classList.add('selected');
+        chosen = c;
+      };
+      list.appendChild(opt);
+    });
+
+    modal.classList.add('visible');
+    $('sendCaixaCancel').onclick = function() { modal.classList.remove('visible'); };
+    $('sendCaixaConfirm').onclick = function() {
+      modal.classList.remove('visible');
+      cb(chosen);
+    };
+  }
+
+  function doSend(grupo, caixaOrigem) {
+    var c = state.composer;
+    var btn = $('compSend');
+    btn.disabled = true;
+    btn.textContent = 'Enviando...';
+
+    // monta corpo final = body do usuário + quoted block
+    var finalBody = (c.body_html || '') +
+      '<br><br><div style="border-top:1px solid rgba(10,107,44,0.25);padding-top:8px;margin-top:8px;font-size:12px;color:#0A6B2C;">' +
+      c.quoted_html +
+      '</div>';
+
+    // resolver anexos: separar os "fromOriginal" dos "uploaded"
+    var uploadedAtts = c.attachments.filter(function(a){ return !a.fromOriginal; });
+    var originalAtts = c.attachments.filter(function(a){ return a.fromOriginal; });
+
+    // pega ID do email correto na caixa escolhida
+    var allCopies = [grupo.principal].concat(grupo.duplicados);
+    var copyInChosenCaixa = allCopies.find(function(cp) { return cp.caixa_origem === caixaOrigem; }) || grupo.principal;
+    var msgId = copyInChosenCaixa.message_id || copyInChosenCaixa.id || copyInChosenCaixa.internetMessageId;
+
+    // se há anexos originais (forward), precisamos baixá-los antes
+    var prefetchPromise = Promise.resolve([]);
+    if (originalAtts.length > 0) {
+      btn.textContent = 'Carregando anexos...';
+      prefetchPromise = Promise.all(originalAtts.map(function(a) {
+        return fetchAttachment(grupo, { id: a.attachment_id, name: a.name, contentType: a.contentType })
+          .then(function(entry) {
+            // converter blob → base64
+            return new Promise(function(resolve, reject) {
+              var fr = new FileReader();
+              fr.onload = function() {
+                var b64 = fr.result.split(',')[1] || '';
+                resolve({
+                  name: entry.name,
+                  contentType: entry.contentType,
+                  size: a.size,
+                  contentBytes: b64
+                });
+              };
+              fr.onerror = function() { reject(new Error('Erro lendo anexo original ' + a.name)); };
+              fr.readAsDataURL(entry.blob);
+            });
+          });
+      }));
+    }
+
+    prefetchPromise.then(function(originalAttsResolved) {
+      btn.textContent = 'Enviando...';
+      var allAtts = uploadedAtts.concat(originalAttsResolved);
+
+      var payload = {
+        action: c.mode,                        // 'reply' | 'replyAll' | 'forward'
+        caixa_origem: caixaOrigem,             // de qual caixa enviar
+        message_id: msgId,                     // ID do email original (para Reply nativo)
+        to: parseEmailList(c.to),
+        cc: parseEmailList(c.cc),
+        subject: c.subject,
+        body_html: finalBody,
+        attachments: allAtts
+      };
+
+      return fetch(state.config.sendUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      }).then(function(r) {
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        return r.text();
+      });
+    })
+    .then(function() {
+      // marcar como respondido localmente
+      state.classificacoes[grupo.key] = state.classificacoes[grupo.key] || {};
+      state.classificacoes[grupo.key].status = 'respondido';
+      saveState();
+      toast('Email enviado com sucesso');
+      closeComposer();
+      renderDetail();
+      renderList();
+    })
+    .catch(function(err) {
+      toast('Erro ao enviar: ' + err.message);
+      btn.disabled = false;
+      btn.textContent = 'Enviar →';
+    });
+  }
+
+  function parseEmailList(str) {
+    if (!str) return [];
+    return str.split(/[,;]/).map(function(s){ return s.trim(); }).filter(Boolean);
+  }
+
+  /* ========== /COMPOSER ========== */
+
+  function previewAttachment(grupo, idx) {
+    var att = grupo.principal.attachments[idx];
+    var btn = document.querySelector('.att-preview[data-idx="' + idx + '"]');
+    if (btn) btn.classList.add('loading');
+
+    fetchAttachment(grupo, att)
+      .then(function(entry) {
+        if (btn) btn.classList.remove('loading');
+        showPreview(entry);
+      })
+      .catch(function(err) {
+        if (btn) btn.classList.remove('loading');
+        toast('Erro: ' + err.message);
+      });
+  }
+
+  function downloadAttachment(grupo, idx) {
+    var att = grupo.principal.attachments[idx];
+    var btn = document.querySelector('.att-download[data-idx="' + idx + '"]');
+    if (btn) btn.classList.add('loading');
+
+    fetchAttachment(grupo, att)
+      .then(function(entry) {
+        if (btn) btn.classList.remove('loading');
+        downloadBlob(entry.blob, entry.name);
+        toast('Baixado: ' + entry.name);
+      })
+      .catch(function(err) {
+        if (btn) btn.classList.remove('loading');
+        toast('Erro: ' + err.message);
+      });
+  }
+
+  function showPreview(entry) {
+    $('previewTitle').textContent = entry.name;
+    var body = $('previewBody');
+    body.innerHTML = '';
+
+    var kind = isPreviewable(entry.name, entry.contentType);
+
+    if (kind === 'pdf') {
+      var iframe = document.createElement('iframe');
+      iframe.src = entry.blobUrl;
+      body.appendChild(iframe);
+    } else if (kind === 'image') {
+      var img = document.createElement('img');
+      img.src = entry.blobUrl;
+      img.alt = entry.name;
+      body.appendChild(img);
+    } else if (kind === 'xml' || kind === 'text') {
+      // ler como texto
+      entry.blob.text().then(function(txt) {
+        var pre = document.createElement('pre');
+        pre.textContent = txt;
+        body.innerHTML = '';
+        body.appendChild(pre);
+      });
+    } else {
+      body.innerHTML = '<div class="no-preview">' +
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:64px;height:64px;opacity:.3;margin-bottom:12px;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>' +
+        '<div>Preview não disponível para este tipo.</div>' +
+        '<div style="margin-top:8px;font-size:12px;">Use o botão "Baixar".</div>' +
+      '</div>';
+    }
+
+    // wire download dentro do preview
+    $('previewDownload').onclick = function() {
+      downloadBlob(entry.blob, entry.name);
+    };
+
+    $('previewOverlay').classList.add('visible');
+  }
+
+  /* LOGIN */
+  var loginAttempts = 0;
+  function tryLogin() {
+    var u = $('loginUser').value.trim();
+    var p = $('loginPass').value;
+    var err = $('loginError');
+    if (loginAttempts >= 3) { err.textContent = 'Bloqueado. Recarregue a página.'; return; }
+    if (u === CREDS.user && p === CREDS.pass) {
+      $('loginScreen').style.display = 'none';
+      $('app').classList.add('visible');
+      bootApp();
+    } else {
+      loginAttempts++;
+      err.textContent = 'Credenciais inválidas (' + loginAttempts + '/3)';
+      $('loginPass').value = '';
+    }
+  }
+
+  function bootApp() {
+    loadState();
+    loadConfig();
+    var cacheTs = loadCache();
+    if (cacheTs) {
+      rebuild();
+      var mins = Math.floor((Date.now() - cacheTs) / 60000);
+      toast('Cache de ' + mins + ' min · clique recarregar pra atualizar');
+    }
+    if (!state.config.fetchUrl) {
+      setTimeout(function() {
+        $('settingsModal').classList.add('visible');
+        $('cfgFetch').focus();
+      }, 400);
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', function() {
+    $('loginBtn').onclick = tryLogin;
+    $('loginPass').addEventListener('keydown', function(e) { if (e.key === 'Enter') tryLogin(); });
+    $('loginUser').addEventListener('keydown', function(e) { if (e.key === 'Enter') $('loginPass').focus(); });
+    $('loginUser').focus();
+
+    $('refreshBtn').onclick = fetchEmails;
+    $('settingsBtn').onclick = function() {
+      $('cfgFetch').value = state.config.fetchUrl || '';
+      $('cfgMarkRead').value = state.config.markReadUrl || '';
+      $('cfgAttachment').value = state.config.attachmentUrl || '';
+      $('cfgSend').value = state.config.sendUrl || '';
+      $('settingsModal').classList.add('visible');
+    };
+    $('logoutBtn').onclick = function() { if (confirm('Sair?')) location.reload(); };
+
+    $('cancelSettings').onclick = function() { $('settingsModal').classList.remove('visible'); };
+    $('saveSettings').onclick = function() {
+      state.config.fetchUrl = $('cfgFetch').value.trim();
+      state.config.markReadUrl = $('cfgMarkRead').value.trim();
+      state.config.attachmentUrl = $('cfgAttachment').value.trim();
+      state.config.sendUrl = $('cfgSend').value.trim();
+      saveConfig();
+      $('settingsModal').classList.remove('visible');
+      toast('Configurações salvas');
+      if (state.config.fetchUrl && state.emails.length === 0) fetchEmails();
+    };
+
+    document.querySelectorAll('.chip[data-filter]').forEach(function(chip) {
+      chip.onclick = function() {
+        document.querySelectorAll('.chip[data-filter]').forEach(function(c){ c.classList.remove('active'); });
+        chip.classList.add('active');
+        state.filterCaixa = chip.dataset.filter;
+        renderList();
+      };
+    });
+    document.querySelectorAll('.chip[data-status]').forEach(function(chip) {
+      chip.onclick = function() {
+        document.querySelectorAll('.chip[data-status]').forEach(function(c){ c.classList.remove('active'); });
+        chip.classList.add('active');
+        state.filterStatus = chip.dataset.status;
+        renderList();
+      };
+    });
+
+    // preview modal
+    $('previewClose').onclick = function() { $('previewOverlay').classList.remove('visible'); };
+    $('previewOverlay').onclick = function(ev) {
+      if (ev.target === $('previewOverlay')) $('previewOverlay').classList.remove('visible');
+    };
+    document.addEventListener('keydown', function(ev) {
+      if (ev.key === 'Escape' && $('previewOverlay').classList.contains('visible')) {
+        $('previewOverlay').classList.remove('visible');
+      }
+    });
+  });
+
+})();
+</script>
+</body>
+</html>
