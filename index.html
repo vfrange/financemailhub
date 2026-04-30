@@ -1294,9 +1294,17 @@
   }
   function stripHtml(html) {
     if (!html) return '';
+    // Remove blocos de comentário, style e script ANTES de injetar no DOM
+    var cleaned = String(html)
+      .replace(/<!--[\s\S]*?-->/g, '')
+      .replace(/<style[\s\S]*?<\/style>/gi, '')
+      .replace(/<script[\s\S]*?<\/script>/gi, '')
+      .replace(/<head[\s\S]*?<\/head>/gi, '');
     var tmp = document.createElement('div');
-    tmp.innerHTML = html;
-    return tmp.textContent || tmp.innerText || '';
+    tmp.innerHTML = cleaned;
+    var text = tmp.textContent || tmp.innerText || '';
+    // colapsa whitespace excessivo
+    return text.replace(/\s+/g, ' ').trim();
   }
   function getExt(name) {
     if (!name) return '';
