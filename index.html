@@ -47,6 +47,8 @@
     --teal: #1F6B6B;
     --teal-soft: rgba(31,107,107,0.12);
 
+    --cabana-purple: #6B3FA0;
+
     --shadow-sm: 0 1px 2px rgba(10,10,10,.04);
     --shadow-md: 0 2px 6px rgba(10,10,10,.08);
     --shadow-lg: 0 8px 24px rgba(10,10,10,.12);
@@ -264,6 +266,7 @@
   .chip.cx-fiscal .chip-dot { background: var(--cabana-green); }
   .chip.cx-recebimento .chip-dot { background: var(--cabana-green-digital); }
   .chip.cx-contas .chip-dot { background: var(--cabana-orange); }
+  .chip.cx-receber .chip-dot { background: var(--cabana-purple); }
   .chip.cx-financeiro .chip-dot { background: var(--cabana-black); }
 
   .filter-divider { width: 1px; height: 18px; background: var(--green-line); margin: 0 4px; }
@@ -379,6 +382,7 @@
   .badge.cx-fiscal { background: var(--cabana-green); color: var(--cabana-cream); }
   .badge.cx-recebimento { background: var(--cabana-green-digital); color: var(--cabana-green); }
   .badge.cx-contas { background: var(--cabana-orange); color: var(--cabana-cream); }
+  .badge.cx-receber { background: var(--cabana-purple); color: var(--cabana-cream); }
   .badge.cx-financeiro { background: var(--cabana-black); color: var(--cabana-cream); }
   .badge.dup { background: var(--cabana-orange); color: var(--cabana-cream); display: inline-flex; align-items: center; gap: 3px; }
   .badge.att { background: var(--green-soft); color: var(--cabana-green); border: 1px solid var(--green-line); display: inline-flex; align-items: center; gap: 3px; }
@@ -1064,7 +1068,7 @@
   <div class="login-card">
     <div class="login-mark">CABANA · BURGERS REAIS</div>
     <h1 class="login-title">Finance<br>Mail <em>Hub</em></h1>
-    <p class="login-sub">Triagem · 4 caixas · Outlook sync</p>
+    <p class="login-sub">Triagem · 5 caixas · Outlook sync</p>
     <input type="text" class="login-input" id="loginUser" placeholder="usuário" autocomplete="off">
     <input type="password" class="login-input" id="loginPass" placeholder="senha" autocomplete="off">
     <button class="login-btn" id="loginBtn">Entrar</button>
@@ -1098,6 +1102,7 @@
     <div class="cmd-stat"><span class="cmd-label">FISCAL</span><span class="cmd-val" id="cmd-fiscal">0</span></div>
     <div class="cmd-stat"><span class="cmd-label">RECEBIMENTO</span><span class="cmd-val" id="cmd-recebimento">0</span></div>
     <div class="cmd-stat"><span class="cmd-label">CONTAS A PAGAR</span><span class="cmd-val" id="cmd-contas">0</span></div>
+    <div class="cmd-stat"><span class="cmd-label">CONTAS A RECEBER</span><span class="cmd-val" id="cmd-receber">0</span></div>
     <div class="cmd-stat"><span class="cmd-label">FINANCEIRO</span><span class="cmd-val" id="cmd-financeiro">0</span></div>
     <div class="cmd-stat"><span class="cmd-label">DUPLICADOS</span><span class="cmd-val" id="cmd-dup">0</span></div>
     <div class="cmd-spacer"></div>
@@ -1110,6 +1115,7 @@
     <button class="chip cx-fiscal" data-filter="fiscal"><span class="chip-dot"></span>Fiscal <span class="chip-count" id="cnt-fiscal">0</span></button>
     <button class="chip cx-recebimento" data-filter="recebimento"><span class="chip-dot"></span>Recebimento <span class="chip-count" id="cnt-recebimento">0</span></button>
     <button class="chip cx-contas" data-filter="contas"><span class="chip-dot"></span>Contas a Pagar <span class="chip-count" id="cnt-contas">0</span></button>
+    <button class="chip cx-receber" data-filter="receber"><span class="chip-dot"></span>Contas a Receber <span class="chip-count" id="cnt-receber">0</span></button>
     <button class="chip cx-financeiro" data-filter="financeiro"><span class="chip-dot"></span>Financeiro <span class="chip-count" id="cnt-financeiro">0</span></button>
 
     <span class="filter-divider"></span>
@@ -1141,7 +1147,7 @@
     <div class="modal-field">
       <label>1) Webhook de busca (GET)</label>
       <input type="text" id="cfgFetch" placeholder="https://prod-xx.eastus.logic.azure.com/...">
-      <div class="modal-field-help">Retorna array com emails das 4 caixas individuais. Cada item deve ter <code>caixa_origem</code>: "fiscal", "recebimento", "contas" ou "financeiro".</div>
+      <div class="modal-field-help">Retorna array com emails das 5 caixas individuais. Cada item deve ter <code>caixa_origem</code>: "fiscal", "recebimento", "contas", "receber" ou "financeiro".</div>
     </div>
 
     <div class="modal-field">
@@ -1218,6 +1224,7 @@
     fiscal:       { label: 'Fiscal',             cls: 'cx-fiscal' },
     recebimento:  { label: 'Recebimento Fiscal', cls: 'cx-recebimento' },
     contas:       { label: 'Contas a Pagar',     cls: 'cx-contas' },
+    receber:      { label: 'Contas a Receber',   cls: 'cx-receber' },
     financeiro:   { label: 'Financeiro',         cls: 'cx-financeiro' }
   };
 
@@ -1515,7 +1522,7 @@
   }
 
   function renderCounts() {
-    var counts = { todas: 0, fiscal: 0, recebimento: 0, contas: 0, financeiro: 0, dup: 0 };
+    var counts = { todas: 0, fiscal: 0, recebimento: 0, contas: 0, receber: 0, financeiro: 0, dup: 0 };
     state.grupos.forEach(function(g) {
       counts.todas++;
       if (g.isDup) counts.dup++;
@@ -1526,6 +1533,7 @@
     $('cnt-fiscal').textContent = counts.fiscal;
     $('cnt-recebimento').textContent = counts.recebimento;
     $('cnt-contas').textContent = counts.contas;
+    $('cnt-receber').textContent = counts.receber;
     $('cnt-financeiro').textContent = counts.financeiro;
     $('cnt-dup').textContent = counts.dup;
 
@@ -1533,6 +1541,7 @@
     if ($('cmd-fiscal'))      $('cmd-fiscal').textContent = counts.fiscal;
     if ($('cmd-recebimento')) $('cmd-recebimento').textContent = counts.recebimento;
     if ($('cmd-contas'))      $('cmd-contas').textContent = counts.contas;
+    if ($('cmd-receber'))     $('cmd-receber').textContent = counts.receber;
     if ($('cmd-financeiro'))  $('cmd-financeiro').textContent = counts.financeiro;
     if ($('cmd-dup'))         $('cmd-dup').textContent = counts.dup;
     if ($('cmd-sync')) {

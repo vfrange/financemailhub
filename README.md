@@ -1,6 +1,6 @@
 # Finance Mail Hub · Cabana
 
-Hub de triagem unificada para as 4 caixas departamentais financeiras da Cabana Burger.
+Hub de triagem unificada para as 5 caixas departamentais financeiras da Cabana Burger.
 
 ## Arquivo único
 
@@ -13,16 +13,19 @@ Hub de triagem unificada para as 4 caixas departamentais financeiras da Cabana B
 
 ## Caixas suportadas
 
-- Fiscal (`fiscal@cabana.com.br`)
-- Recebimento Fiscal (`recebimento@cabana.com.br`)
-- Contas a Pagar (`contas@cabana.com.br`)
-- Financeiro (`financeiro@cabana.com.br`)
+| Identificador | Email | Cor |
+|---|---|---|
+| `fiscal` | fiscal@cabanaburger.com.br | Verde Cabana |
+| `recebimento` | recebimento@cabanaburger.com.br *(a criar)* | Verde digital |
+| `contas` | contasapagar@cabanaburger.com.br | Laranja |
+| `receber` | contasareceber@cabanaburger.com.br | Roxo |
+| `financeiro` | financeiro@cabanaburger.com.br | Preto |
 
 ## Configuração inicial
 
 Após o primeiro login, o app abre o modal de Configurações pedindo 3 webhooks do Power Automate:
 
-1. **Webhook de busca (GET)** — retorna emails das 4 caixas
+1. **Webhook de busca (GET)** — retorna emails das 5 caixas
 2. **Webhook marcar lido (POST)** — sincroniza isRead com Outlook
 3. **Webhook anexo (POST)** — busca conteúdo de anexos sob demanda
 
@@ -30,7 +33,7 @@ Os fluxos do Power Automate estão documentados separadamente.
 
 ## Funcionalidades
 
-- Visão unificada das 4 caixas com filtros por caixa e status
+- Visão unificada das 5 caixas com filtros por caixa e status
 - Detecção de duplicados via internetMessageId + fallback heurístico
 - Marcar lido sincroniza com Outlook em todas as caixas onde o email duplicado existe
 - Anexos baixados sob demanda; preview inline de PDF, imagens, XML, texto
