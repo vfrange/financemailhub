@@ -1354,7 +1354,20 @@
     } catch(e) {}
   }
   function saveCache() {
-    try { localStorage.setItem(CACHE_KEY, JSON.stringify({ ts: Date.now(), emails: state.emails })); } catch(e) {}
+    try {
+      // Cache leve: omite body_html e attachments (que ocupam muito espaço)
+      // Esses campos ficam só em memória durante a sessão
+      var lightEmails = state.emails.map(function(e) {
+        var copy = {};
+        for (var k in e) {
+          if (k !== 'body_html' && k !== 'attachments') copy[k] = e[k];
+        }
+        return copy;
+      });
+      localStorage.setItem(CACHE_KEY, JSON.stringify({ ts: Date.now(), emails: lightEmails }));
+    } catch(err) {
+      console.warn('Cache não foi salvo:', err.message);
+    }
   }
   function loadCache() {
     try {
