@@ -1235,6 +1235,29 @@
     financeiro:   { label: 'Financeiro',         cls: 'cx-financeiro' }
   };
 
+  // Mapeamento de aliases — aceita variações vindas do Power Automate
+  var CAIXA_ALIASES = {
+    'fiscal': 'fiscal',
+    'recebimento': 'recebimento',
+    'recebimento_fiscal': 'recebimento',
+    'contas': 'contas',
+    'contas_a_pagar': 'contas',
+    'contasapagar': 'contas',
+    'contas_pagar': 'contas',
+    'pagar': 'contas',
+    'receber': 'receber',
+    'contas_a_receber': 'receber',
+    'contasareceber': 'receber',
+    'contas_receber': 'receber',
+    'financeiro': 'financeiro'
+  };
+
+  function normalizeCaixa(raw) {
+    if (!raw) return null;
+    var key = String(raw).toLowerCase().trim();
+    return CAIXA_ALIASES[key] || key;
+  }
+
   var CATEGORIAS = [
     { id: 'critico',      label: 'Crítico',          cls: 'crit'  },
     { id: 'diretores',    label: 'Sócios/Diretores', cls: 'diret' },
@@ -1375,6 +1398,11 @@
       if (raw) {
         var data = JSON.parse(raw);
         if (data.emails && Array.isArray(data.emails)) {
+          // Normaliza caixa_origem pra aceitar variações antigas no cache
+          data.emails.forEach(function(e) {
+            var normalized = normalizeCaixa(e.caixa_origem);
+            if (normalized) e.caixa_origem = normalized;
+          });
           state.emails = data.emails;
           return data.ts;
         }
@@ -1448,6 +1476,11 @@
       .then(function(r) { return r.json(); })
       .then(function(data) {
         var emails = Array.isArray(data) ? data : (data.value || data.emails || data.results || []);
+        // Normaliza caixa_origem pra aceitar variações do Power Automate
+        emails.forEach(function(e) {
+          var normalized = normalizeCaixa(e.caixa_origem);
+          if (normalized) e.caixa_origem = normalized;
+        });
         state.emails = emails;
         saveCache();
         rebuild();
