@@ -1412,28 +1412,6 @@
   }
 
   /* DEDUP */
-  // Mapa de email Cabana → identificador da caixa
-  var EMAIL_TO_CAIXA = {
-    'fiscal@cabanaburger.com.br': 'fiscal',
-    'recebimento@cabanaburger.com.br': 'recebimento',
-    'contasapagar@cabanaburger.com.br': 'contas',
-    'contasareceber@cabanaburger.com.br': 'receber',
-    'financeiro@cabanaburger.com.br': 'financeiro'
-  };
-
-  // Detecta quais caixas Cabana estão endereçadas no TO/CC do email
-  function detectCaixasFromHeaders(email) {
-    var caixas = [];
-    var toCc = ((typeof email.to === 'string' ? email.to : JSON.stringify(email.to || '')) + ';' +
-                (typeof email.cc === 'string' ? email.cc : JSON.stringify(email.cc || ''))).toLowerCase();
-    Object.keys(EMAIL_TO_CAIXA).forEach(function(emailAddr) {
-      if (toCc.indexOf(emailAddr) !== -1) {
-        caixas.push(EMAIL_TO_CAIXA[emailAddr]);
-      }
-    });
-    return caixas;
-  }
-
   function dedupEmails(emails) {
     var byMsgId = {};
     var byHeur = {};
@@ -1463,16 +1441,9 @@
     });
 
     return todos.map(function(grp) {
-      // Caixas onde o email FISICAMENTE apareceu (pode estar inflado por regras de redirecionamento)
-      var caixasFisicas = grp.map(function(e) { return e.caixa_origem; })
+      // Caixas onde o email FISICAMENTE está (verdade do Outlook)
+      var caixas = grp.map(function(e) { return e.caixa_origem; })
                        .filter(function(v, i, a) { return a.indexOf(v) === i; });
-
-      // Caixas que ESTÃO no TO/CC original (uso isso pra contar duplicação real)
-      var caixasNoHeader = detectCaixasFromHeaders(grp[0]);
-
-      // Se o header tem alguma caixa Cabana, uso essa lista (mais preciso)
-      // Senão, fallback pras caixas físicas (caso raro: email sem TO mas que caiu na caixa)
-      var caixas = caixasNoHeader.length > 0 ? caixasNoHeader : caixasFisicas;
 
       return {
         key: grp[0].internetMessageId || grp[0].internet_message_id || grp[0].message_id ||
@@ -1480,7 +1451,6 @@
         principal: grp[0],
         duplicados: grp.slice(1),
         caixas: caixas,
-        caixasFisicas: caixasFisicas,
         isDup: caixas.length > 1
       };
     }).sort(function(a, b) {
@@ -1691,7 +1661,7 @@
         return '<span class="badge ' + (cx ? cx.cls : '') + '">' + (cx ? cx.label : c) + '</span>';
       }).join('');
 
-      var dupHtml = g.isDup ? '<span class="badge dup">⧉ ' + g.caixas.length + 'x</span>' : '';
+      var dupHtml = g.isDup ? '<span class="badge dup">⧉ ' + (g.duplicados.length + 1) + 'x</span>' : '';
 
       var attCount = (e.attachments || []).length;
       var attHtml = attCount > 0 ? '<span class="badge att">📎 ' + attCount + '</span>' : '';
@@ -1773,15 +1743,8 @@
     var dupListHtml = '';
     if (grupo.isDup) {
       var allCopies = [grupo.principal].concat(grupo.duplicados);
-      // Filtra cópias que estão nas caixas REAIS (TO/CC), não nas redirecionadas
-      var copiasReais = allCopies.filter(function(cp) {
-        return grupo.caixas.indexOf(cp.caixa_origem) !== -1;
-      });
-      // Se a filtragem zerou (caso edge), usa todas
-      var copiasParaListar = copiasReais.length > 0 ? copiasReais : allCopies;
-
       dupListHtml = '<div class="duplicate-list">';
-      copiasParaListar.forEach(function(cp) {
+      allCopies.forEach(function(cp) {
         var cx = CAIXAS[cp.caixa_origem];
         var t = new Date(cp.received_at || cp.receivedDateTime);
         var ts = isNaN(t.getTime()) ? '' : t.toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' });
@@ -1791,8 +1754,8 @@
     }
 
     var dupBanner = grupo.isDup ?
-      '<div class="duplicate-banner"><strong>⧉ Email duplicado.</strong> Endereçado a ' + grupo.caixas.length +
-      ' caixa(s) Cabana. Marcar lido sincroniza nas ' + grupo.caixas.length + '.' + dupListHtml + '</div>' : '';
+      '<div class="duplicate-banner"><strong>⧉ Email duplicado.</strong> Recebido em ' + grupo.caixas.length +
+      ' caixa(s) · ' + (grupo.duplicados.length + 1) + ' cópia(s) total. Marcar lido sincroniza nas ' + grupo.caixas.length + '.' + dupListHtml + '</div>' : '';
 
     var catOptions = '<option value="">— sem categoria —</option>' +
       CATEGORIAS.map(function(c) {
@@ -1820,6 +1783,7 @@
             '<span>' + escapeHtml(receivedFormatted) + '</span>' +
           '</div>' +
           (e.to ? '<div class="detail-meta-row"><span class="sep">para</span> ' + escapeHtml(Array.isArray(e.to) ? e.to.join(', ') : e.to) + '</div>' : '') +
+          (e.cc && (Array.isArray(e.cc) ? e.cc.length > 0 : String(e.cc).trim().length > 0) ? '<div class="detail-meta-row"><span class="sep">cc</span> ' + escapeHtml(Array.isArray(e.cc) ? e.cc.join(', ') : e.cc) + '</div>' : '') +
           '<div class="detail-meta-row">' + caixasHtml + '</div>' +
           dupBanner +
         '</div>' +
